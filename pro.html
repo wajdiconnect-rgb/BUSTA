@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Busta</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,sans-serif;background:#f4f6f5;color:#14211b}
+.top{background:linear-gradient(135deg,#0f3d26,#1b6b42);color:#fff;padding:50px 20px 26px;border-radius:0 0 28px 28px}
+.ch{display:flex;gap:8px}.ch b{padding:7px 16px;border-radius:20px;background:#ffffff22;font-weight:500}.ch .on{background:#fff;color:#0f3d26}
+.lb{opacity:.8;margin-top:18px}.tot{font-size:44px;font-weight:700}
+h3{margin:22px 20px 8px;font-size:15px;color:#5b6b63;text-transform:uppercase}
+.c{background:#fff;margin:8px 16px;border-radius:18px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px #0000000a}
+.ic{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff}
+.f{flex:1}.n{font-weight:600}.s{font-size:13px;color:#6b7a72}.v{font-size:20px;font-weight:700}
+.bar{height:6px;background:#e7ece9;border-radius:3px;margin-top:8px}.bar i{display:block;height:6px;border-radius:3px}
+.mod{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end}.sh{background:#fff;width:100%;border-radius:24px 24px 0 0;padding:22px}
+input{width:100%;font-size:36px;padding:12px;border:2px solid #1b6b42;border-radius:14px;text-align:center}
+.bt{width:100%;font-size:19px;padding:16px;border:none;border-radius:14px;background:#1b6b42;color:#fff;margin-top:12px}
+.gr{background:#eef2f0;color:#14211b}
+</style></head><body>
+<div class="top"><div class="ch"><b id="cW" onclick="chi('Wajdi')">Wajdi</b><b id="cR" onclick="chi('Rosy')">Rosy</b></div>
+<div class="lb">Disponibile questo mese</div><div class="tot" id="tot"></div></div>
+<h3>Buste</h3><div id="bu"></div>
+<h3>Prossime scadenze</h3><div id="sc"></div>
+<h3>Ultime spese</h3><div id="st"></div>
+<div style="padding:16px"><button class="bt" onclick="leggi()">Leggi riepilogo</button><button class="bt gr" onclick="nuovo()">Nuovo mese</button></div>
+<div class="mod" id="mo"><div class="sh"><div class="n" id="mt" style="font-size:20px;margin-bottom:12px"></div>
+<input id="im" type="number" inputmode="decimal" placeholder="0 €"><button class="bt" onclick="ok()">Salva spesa</button><button class="bt gr" onclick="chiudi()">Annulla</button></div></div>
+<script>
+const B=[['spesa','Spesa','🛒',600,'#1b6b42'],['benzina','Benzina','⛽',300,'#c2410c'],['bambini','Bambini','🎈',80,'#2563eb'],['imprevisti','Imprevisti','🛟',40,'#7c3aed']];
+const S=[['Mutuo',30,655],['Compass',30,243.8],['Luce e gas',30,146],['Cofidis',1,210.89],['Carta di credito',5,1000],['Findomestic',7,63.7],['Telecom',8,75.85],['Rata BNL',14,104.65]];
+let d=JSON.parse(localStorage.bpro||'{"n":"Wajdi","u":{},"h":[]}'),cur=null;
+const sv=()=>localStorage.bpro=JSON.stringify(d),eu=x=>x.toLocaleString('it-IT',{maximumFractionDigits:2})+' €';
+const rs=b=>b[3]-(d.u[b[0]]||0);
+function di(t){let u=new SpeechSynthesisUtterance(t);u.lang='it-IT';speechSynthesis.cancel();speechSynthesis.speak(u)}
+function gg(g){let o=new Date(),t=new Date(o.getFullYear(),o.getMonth(),g);if(t<new Date(o.toDateString()))t.setMonth(t.getMonth()+1);return Math.round((t-new Date(o.toDateString()))/864e5)}
+function mostra(){cW.className=d.n=='Wajdi'?'on':'';cR.className=d.n=='Rosy'?'on':'';
+tot.textContent=eu(B.reduce((a,b)=>a+rs(b),0));
+bu.innerHTML=B.map((b,i)=>{let r=rs(b),p=Math.max(0,Math.min(100,r/b[3]*100));
+return `<div class="c" onclick="apri(${i})"><div class="ic" style="background:${b[4]}">${b[2]}</div><div class="f"><div class="n">${b[1]}</div><div class="s">su ${eu(b[3])}</div><div class="bar"><i style="width:${p}%;background:${p<20?'#dc2626':b[4]}"></i></div></div><div class="v">${eu(r)}</div></div>`}).join('');
+sc.innerHTML=S.map(s=>[s,gg(s[1])]).sort((a,b)=>a[1]-b[1]).slice(0,4).map(([s,g])=>`<div class="c"><div class="f"><div class="n">${s[0]}</div><div class="s">${g==0?'OGGI':g==1?'domani':'tra '+g+' giorni'} · giorno ${s[1]}</div></div><div class="v">${eu(s[2])}</div></div>`).join('');
+st.innerHTML=d.h.slice(0,5).map(h=>`<div class="c"><div class="f"><div class="n">${h[1]}</div><div class="s">${h[0]} · ${h[3]}</div></div><div class="v">-${eu(h[2])}</div></div>`).join('')||'<div class="c s">Nessuna spesa ancora</div>'}
+function chi(n){d.n=n;sv();mostra();di('Ciao '+n)}
+function apri(i){cur=B[i];mt.textContent='Quanto hai speso in '+cur[1]+'?';im.value='';mo.style.display='flex';im.focus()}
+function chiudi(){mo.style.display='none'}
+function ok(){let v=parseFloat(im.value);if(!v)return;d.u[cur[0]]=(d.u[cur[0]]||0)+v;
+d.h.unshift([d.n,cur[1],v,new Date().toLocaleDateString('it-IT')]);sv();chiudi();mostra();di(cur[1]+': restano '+Math.round(rs(cur))+' euro')}
+function leggi(){let p=S.map(s=>[s,gg(s[1])]).sort((a,b)=>a[1]-b[1])[0];
+di('Ciao '+d.n+'. Hai ancora '+Math.round(B.reduce((a,b)=>a+rs(b),0))+' euro. '+B.map(b=>b[1]+' '+Math.round(rs(b))).join(', ')+'. Prossima scadenza: '+p[0][0]+' tra '+p[1]+' giorni.')}
+function nuovo(){if(confirm('Iniziare un nuovo mese?')){d.u={};d.h=[];sv();mostra();di('Nuovo mese, buste piene')}}
+mostra();
+</script></body></html>
