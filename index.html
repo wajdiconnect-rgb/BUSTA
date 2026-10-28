@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<body>
+
+
+
+Premi il microfono e di': "spesa 40 euro"
+
+<script>
+const BASE=[
+ {id:'spesa',nome:'Spesa',icona:'🛒',budget:600,parole:['spesa','supermercato','mangiare']},
+ {id:'benzina',nome:'Benzina',icona:'⛽',budget:300,parole:['benzina','gasolio','diesel','pieno']},
+ {id:'bambini',nome:'Bambini',icona:'🎂',budget:80,parole:['bambini','figli','pizza','compleanno','regalo']},
+ {id:'salvadanaio',nome:'Imprevisti',icona:'🐷',budget:40,parole:['imprevisti','imprevisto','salvadanaio','emergenza']}
+];
+let dati=JSON.parse(localStorage.getItem('busta')||'null')||{chi:'Joe',spese:{spesa:0,benzina:0,bambini:0,salvadanaio:0}};
+function salva(){localStorage.setItem('busta',JSON.stringify(dati))}
+function parla(t){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='it-IT';speechSynthesis.speak(u)}
+function resto(b){return b.budget-(dati.spese[b.id]||0)}
+function mostra(){
+ document.getElementById('ciao').textContent='Ciao '+dati.chi+'! 👋';
+ document.getElementById('bJoe').className=dati.chi=='Joe'?'on':'';
+ document.getElementById('bRosy').className=dati.chi=='Rosy'?'on':'';
+ document.getElementById('buste').innerHTML=BASE.map(b=>{const r=resto(b);
+  return ` ${b.icona} ${b.nome} su ${b.budget} € `}).join('');
+}
+function scegli(n){dati.chi=n;salva();mostra();parla('Ciao '+n)}
+function spendi(id,euro){
+ const b=BASE.find(x=>x.id==id);dati.spese[id]=(dati...
