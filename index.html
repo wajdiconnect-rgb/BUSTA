@@ -1,30 +1,32 @@
 <!DOCTYPE html>
-<html lang="it">
-
-<body>
-
-
-
-Premi il microfono e di': "spesa 40 euro"
-
+<html lang="it"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Busta</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#eafaf0;text-align:center}
+header{background:#1fa85a;color:#fff;padding:20px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px}
+.b{background:#fff;border-radius:22px;padding:16px;font-size:20px}
+.r{font-size:30px;font-weight:bold;color:#1fa85a}
+button{font-size:20px;border:none;border-radius:30px;padding:10px 20px;margin:5px;background:#fff;color:#1fa85a}
+#mic{width:130px;height:130px;border-radius:50%;background:#1fa85a;color:#fff;font-size:50px}
+</style></head><body>
+<header><h1>💚 Busta</h1><div id="ciao"></div>
+<button onclick="chi('Joe')">Joe</button><button onclick="chi('Rosy')">Rosy</button></header>
+<div class="g" id="g"></div>
+<button id="mic" onclick="ascolta()">🎤</button>
+<p id="m">Premi il microfono e di': spesa 40</p>
+<button onclick="scrivi()">✍️ Scrivi spesa</button>
+<button onclick="resta()">🔊 Quanto resta?</button>
+<button onclick="nuovo()">📅 Nuovo mese</button>
 <script>
-const BASE=[
- {id:'spesa',nome:'Spesa',icona:'🛒',budget:600,parole:['spesa','supermercato','mangiare']},
- {id:'benzina',nome:'Benzina',icona:'⛽',budget:300,parole:['benzina','gasolio','diesel','pieno']},
- {id:'bambini',nome:'Bambini',icona:'🎂',budget:80,parole:['bambini','figli','pizza','compleanno','regalo']},
- {id:'salvadanaio',nome:'Imprevisti',icona:'🐷',budget:40,parole:['imprevisti','imprevisto','salvadanaio','emergenza']}
-];
-let dati=JSON.parse(localStorage.getItem('busta')||'null')||{chi:'Joe',spese:{spesa:0,benzina:0,bambini:0,salvadanaio:0}};
-function salva(){localStorage.setItem('busta',JSON.stringify(dati))}
-function parla(t){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='it-IT';speechSynthesis.speak(u)}
-function resto(b){return b.budget-(dati.spese[b.id]||0)}
-function mostra(){
- document.getElementById('ciao').textContent='Ciao '+dati.chi+'! 👋';
- document.getElementById('bJoe').className=dati.chi=='Joe'?'on':'';
- document.getElementById('bRosy').className=dati.chi=='Rosy'?'on':'';
- document.getElementById('buste').innerHTML=BASE.map(b=>{const r=resto(b);
-  return ` ${b.icona} ${b.nome} su ${b.budget} € `}).join('');
-}
-function scegli(n){dati.chi=n;salva();mostra();parla('Ciao '+n)}
-function spendi(id,euro){
- const b=BASE.find(x=>x.id==id);dati.spese[id]=(dati...
+const B={spesa:['🛒',600],benzina:['⛽',300],bambini:['🎂',80],imprevisti:['🐷',40]};
+let d=JSON.parse(localStorage.busta||'{"n":"Joe","s":{}}');
+function sv(){localStorage.busta=JSON.stringify(d)}
+function di(t){document.getElementById('m').textContent=t;let u=new SpeechSynthesisUtterance(t);u.lang='it-IT';speechSynthesis.speak(u)}
+function rs(k){return B[k][1]-(d.s[k]||0)}
+function mostra(){document.getElementById('ciao').textContent='Ciao '+d.n+'!';let h='';
+for(let k in B)h+='<div class="b">'+B[k][0]+'<br>'+k+'<div class="r">'+rs(k)+' €</div></div>';
+document.getElementById('g').innerHTML=h}
+function chi(n){d.n=n;sv();mostra();di('Ciao '+n)}
+function capisci(t){t=t.toLowerCase();let x=t.match(/\d+([.,]\d+)?/
