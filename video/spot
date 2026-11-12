@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Comando semplice:  ./spot FOTO "frase che descrive l'effetto" [opzioni]
+# Esempio:          ./spot mela.jpg "la mela si sbuccia da sola" --titolo "Mele appena colte" --cta "Ordina ora"
+if [ $# -lt 2 ]; then
+  echo "Uso: ./spot FOTO \"frase dell'effetto\" [--titolo ...] [--cta ...] [--voce ...] [--musica file.mp3]"
+  echo "Tutte le opzioni:  python3 $(dirname "$0")/crea_video.py --help"
+  exit 1
+fi
+exec python3 "$(dirname "$0")/crea_video.py" "$@"
