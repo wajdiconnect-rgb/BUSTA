@@ -18,6 +18,9 @@ export type ProdottoSingoloProps = {
   logo: string;
   oro: string;
   durata: number;
+  /** video da mostrare DENTRO lo schermo del prodotto (es. la frutta) */
+  schermo?: {video: string; maschera: string; box: {x: number; y: number; w: number; h: number}; pezzi: string};
+  griglia?: number; // pezzi per lato nello smontaggio (default 6)
 };
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -70,7 +73,7 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
 
   const pezzi: React.ReactNode[] = [];
   if (inPezzi) {
-    const C = 6, R = 6;
+    const C = p.griglia ?? 6, R = Math.round((p.griglia ?? 6) * 1.25);
     for (let r = 0; r < R; r++)
       for (let c = 0; c < C; c++) {
         const i = r * C + c;
@@ -78,7 +81,7 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
         const px = c * pw, py = r * ph;
         const dx = (px + pw / 2 - W / 2), dy = (py + ph / 2 - H / 2);
         const len = Math.hypot(dx, dy) || 1;
-        const d = (180 + rnd(i, 1) * 320) * espl;
+        const d = (90 + rnd(i, 1) * 170) * espl;
         pezzi.push(
           <div
             key={i}
@@ -88,10 +91,10 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
               top: py,
               width: pw + 1,
               height: ph + 1,
-              backgroundImage: `url(${staticFile(p.fronte)})`,
+              backgroundImage: `url(${staticFile(p.schermo ? p.schermo.pezzi : p.fronte)})`,
               backgroundSize: `${W}px ${H}px`,
               backgroundPosition: `${-px}px ${-py}px`,
-              transform: `translate3d(${(dx / len) * d + (rnd(i, 2) - 0.5) * 120 * espl}px, ${(dy / len) * d + (rnd(i, 3) - 0.5) * 120 * espl}px, ${rnd(i, 4) * 500 * espl}px) rotateX(${(rnd(i, 5) - 0.5) * 220 * espl}deg) rotateY(${(rnd(i, 6) - 0.5) * 220 * espl}deg) rotateZ(${(rnd(i, 7) - 0.5) * 120 * espl}deg)`,
+              transform: `translate3d(${(dx / len) * d + (rnd(i, 2) - 0.5) * 120 * espl}px, ${(dy / len) * d + (rnd(i, 3) - 0.5) * 120 * espl}px, ${rnd(i, 4) * 260 * espl}px) rotateX(${(rnd(i, 5) - 0.5) * 220 * espl}deg) rotateY(${(rnd(i, 6) - 0.5) * 220 * espl}deg) rotateZ(${(rnd(i, 7) - 0.5) * 120 * espl}deg)`,
               filter: 'drop-shadow(0 10px 14px rgba(0,0,0,0.35))',
             }}
           />,
@@ -150,6 +153,31 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
               {/* davanti */}
               <div style={{position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'translateZ(1px)'}}>
                 <Img src={staticFile(p.fronte)} style={{width: W, height: H, display: 'block'}} />
+                {p.schermo ? (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      WebkitMaskImage: `url(${staticFile(p.schermo.maschera)})`,
+                      WebkitMaskSize: '100% 100%',
+                    }}
+                  >
+                    <OffthreadVideo
+                      src={staticFile(p.schermo.video)}
+                      muted
+                      style={{
+                        position: 'absolute',
+                        left: p.schermo.box.x * W,
+                        top: p.schermo.box.y * H,
+                        width: p.schermo.box.w * W,
+                        height: p.schermo.box.h * H,
+                        objectFit: 'cover',
+                      }}
+                    />
+                    {/* riflesso del vetro dello schermo */}
+                    <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 35%)'}} />
+                  </div>
+                ) : null}
                 <div
                   style={{
                     position: 'absolute',
