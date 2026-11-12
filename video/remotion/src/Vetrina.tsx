@@ -29,6 +29,7 @@ export type Scena = {
   video?: string; // in alternativa: video con trasparenza (webm VP9 alpha)
   giro3d?: boolean; // rotazione 3D lenta con riflesso di luce
   ampiezza3d?: number; // 1 = giro ampio (prosciutto), 0.2 = oscillazione leggera
+  pieno?: boolean; // video a tutto schermo (es. clip da foto_3d.py), con dissolvenza
   larghezza: number; // px a 1080
   x: number; // bordo sinistro finale
   y: number; // bordo alto finale
@@ -112,10 +113,26 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
   const viaTesto = interpolate(frame, [tot - 0.8 * fps, tot - 0.3 * fps], [1, 0], clamp);
   const linea = interpolate(frame, [tEt, tEt + 26], [0, 1], {...clamp, easing: Easing.inOut(Easing.cubic)});
 
+  const dissolvi = interpolate(frame, [0, 14, tot - 16, tot], [0, 1, 1, 0], clamp);
+
   return (
     <AbsoluteFill>
+      {s.pieno && s.video ? (
+        <AbsoluteFill style={{opacity: dissolvi}}>
+          <OffthreadVideo src={staticFile(s.video)} muted style={{width: '100%', height: '100%'}} />
+          <AbsoluteFill
+            style={{
+              background:
+                s.testo === 'alto'
+                  ? 'linear-gradient(180deg, rgba(8,6,4,0.75) 0%, rgba(8,6,4,0) 32%)'
+                  : 'linear-gradient(0deg, rgba(8,6,4,0.8) 0%, rgba(8,6,4,0) 40%)',
+            }}
+          />
+        </AbsoluteFill>
+      ) : null}
       <div
         style={{
+          display: s.pieno ? 'none' : undefined,
           position: 'absolute',
           left: 0,
           top: 0,

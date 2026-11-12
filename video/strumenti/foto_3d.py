@@ -29,12 +29,15 @@ def profondita(img: Image.Image) -> np.ndarray:
     return d
 
 
-def copri(img: np.ndarray, w: int, h: int) -> np.ndarray:
+MARGINE = 1.12
+
+
+def copri(img: np.ndarray, w: int, h: int, cx: float = 0.5, cy: float = 0.5):
     ih, iw = img.shape[:2]
-    s = max(w / iw, h / ih) * 1.12  # margine per il movimento
+    s = max(w / iw, h / ih) * MARGINE  # margine per il movimento
     r = cv2.resize(img, (int(iw * s + 0.5), int(ih * s + 0.5)), interpolation=cv2.INTER_LANCZOS4)
-    y = (r.shape[0] - h) // 2
-    x = (r.shape[1] - w) // 2
+    y = int(np.clip(r.shape[0] * cy - h / 2, 0, r.shape[0] - h))
+    x = int(np.clip(r.shape[1] * cx - w / 2, 0, r.shape[1] - w))
     return r, x, y
 
 
@@ -48,13 +51,18 @@ def main():
     ap.add_argument("--forza", type=float, default=1.0)
     ap.add_argument("--larghezza", type=int, default=1080)
     ap.add_argument("--altezza", type=int, default=1920)
+    ap.add_argument("--centro-x", type=float, default=0.5, help="centro orizzontale dell'inquadratura (0-1)")
+    ap.add_argument("--centro-y", type=float, default=0.5)
+    ap.add_argument("--margine", type=float, default=1.12, help="zoom di partenza (1.0 = foto intera)")
     a = ap.parse_args()
+    global MARGINE
+    MARGINE = a.margine
 
     src = Image.open(a.foto).convert("RGB")
     d = profondita(src)
     W, H = a.larghezza, a.altezza
-    img, ox, oy = copri(np.array(src), W, H)
-    dep, _, _ = copri(d, W, H)
+    img, ox, oy = copri(np.array(src), W, H, a.centro_x, a.centro_y)
+    dep, _, _ = copri(d, W, H, a.centro_x, a.centro_y)
     dep = dep[..., 0] if dep.ndim == 3 else dep
 
     n = int(a.durata * a.fps)
