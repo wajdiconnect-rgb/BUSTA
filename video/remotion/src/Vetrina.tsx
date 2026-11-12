@@ -80,7 +80,8 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
   const ty = s.y + da.dy * (1 - ingresso) + 40 * deriva + (esceADestra ? 0 : 1400 * uscita);
   const rot = (s.rotazione ?? 0) + (s.entrata === 'destra' ? 4 : -7) * (1 - ingresso) + 1.5 * deriva;
   const scala = 0.94 + 0.06 * ingresso + 0.05 * deriva;
-  const opacita = Math.min(1, ingresso * 2.2) * (1 - uscita * 0.6);
+  // chi entra di lato arriva già pieno (niente effetto fantasma)
+  const opacita = (esceADestra ? 1 : Math.min(1, ingresso * 2.2)) * (1 - uscita * 0.6);
   // rotazione 3D: gira lentamente mostrando il profilo, poi torna frontale
   const amp = s.ampiezza3d ?? 1;
   const giroY =
@@ -211,7 +212,7 @@ const Finale: React.FC<{f: VetrinaProps['finale']; oro: string}> = ({f, oro}) =>
   const r2 = interpolate(frame, [30, 50], [0, 1], clamp);
   const motto = interpolate(frame, [48, 70], [0, 1], clamp);
   const sito = interpolate(frame, [64, 84], [0, 1], clamp);
-  const slogan = interpolate(frame, [150, 175], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const slogan = interpolate(frame, [190, 215], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
   // riflesso di luce che attraversa il logo
   const riflesso = interpolate(frame, [30, 62], [-60, 160], clamp);
   const nero = interpolate(frame, [durationInFrames - 10, durationInFrames - 1], [0, 1], clamp);
@@ -319,9 +320,10 @@ const Finale: React.FC<{f: VetrinaProps['finale']; oro: string}> = ({f, oro}) =>
               opacity: slogan,
               transform: `translateY(${(1 - slogan) * 30}px) scale(${0.96 + 0.04 * slogan})`,
               textShadow: '0 6px 30px rgba(0,0,0,0.6)',
+              whiteSpace: 'pre-line',
             }}
           >
-            {f.slogan}
+            {f.slogan.replace(/,\s*/, ',\n')}
           </div>
         ) : null}
       </div>

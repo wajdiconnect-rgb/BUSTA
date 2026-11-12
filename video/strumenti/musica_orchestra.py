@@ -29,8 +29,9 @@ def timpani(start,vol,roll=0.0):
 # progressione (Re minore -> Si bem -> Fa -> Do -> ... -> Re maggiore finale)
 prog=[[50,57,62,65],[46,53,58,62],[41,53,57,60],[48,55,60,64]]
 bar=2.7
+fin=float(sys.argv[3]) if len(sys.argv)>3 else D-6.8
 tcur=0.0;i=0
-while tcur<D-6.5:
+while tcur<fin+0.3:
     ch=prog[i%4]; crescendo=min(1,0.35+tcur/14)
     for m in ch[1:]: strings(m,tcur,bar+0.9,0.05*crescendo,att=0.9 if tcur>0 else 2.0)
     strings(ch[0]-12,tcur,bar+0.9,0.07*crescendo,att=1.0)  # violoncelli/contrabbassi
@@ -38,11 +39,14 @@ while tcur<D-6.5:
         arp=[ch[1]+12,ch[2]+12,ch[3]+12,ch[2]+24,ch[3]+12,ch[2]+12]
         for k,m in enumerate(arp): piano(m,tcur+k*bar/6,0.10)
     tcur+=bar;i+=1
-fin=D-6.8
 timpani(fin-1.6,0.35,roll=1.6)
-for m in [38,50,57,62,66,69,74]: strings(m,fin,6.6,0.075 if m>40 else 0.1,att=0.25,rel=2.5)
+for m in [38,50,57,62,66,69,74]: strings(m,fin,D-fin,0.075 if m>40 else 0.1,att=0.25,rel=2.5)
 timpani(fin,0.6)
 for m in [62,66,69,74,78]: piano(m,fin+0.02,0.12,dur=5)
+slo=float(sys.argv[4]) if len(sys.argv)>4 else None
+if slo:
+    timpani(slo-0.05,0.3)
+    for k,m in enumerate([62,66,69,74,78,81]): piano(m,slo+k*0.09,0.10,dur=4)
 x=np.stack([L,R],1)
 # riverbero da sala da concerto
 Lr=int(3.0*sr); ir=rng.normal(0,1,(Lr,2))*np.exp(-np.arange(Lr)/sr*2.0)[:,None]; ir[:int(.025*sr)]=0
