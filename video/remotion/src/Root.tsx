@@ -9,6 +9,7 @@ import {Infinity3D, Infinity3DProps} from './Infinity3D';
 import {Parata3D, Parata3DProps} from './Parata3D';
 import {Discesa3D, Discesa3DProps} from './Discesa3D';
 import {SitoTocco, SitoToccoProps, durataSitoTocco} from './SitoTocco';
+import {ProdottoSingolo, ProdottoSingoloProps} from './ProdottoSingolo';
 
 const FPS = 30;
 
@@ -65,8 +66,20 @@ const discesaDefault: Discesa3DProps = {sfondo: 'sito.mp4', prodotto: 'p.png', a
 
 const toccoDefault: SitoToccoProps = {alto: [], sfondoBanda: '#efe6d6', bandaY: 3070, cardW: 337, cardH: 1042, passoCard: 357, schede: [], logo: 'logo.png', durata: 28};
 
+const singoloDefault: ProdottoSingoloProps = {sfondo: 'sito.mp4', fronte: 'f.png', retro: 'r.png', aspetto: 1, larghezza: 860, nome: 'Prodotto', logo: 'logo.png', oro: '#D4A64A', durata: 14};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="ProdottoSingolo"
+    component={ProdottoSingolo}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={420}
+    defaultProps={singoloDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round(props.durata * FPS)})}
+  />
   <Composition
     id="SitoTocco"
     component={SitoTocco}

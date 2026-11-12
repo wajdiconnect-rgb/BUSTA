@@ -1,0 +1,202 @@
+import React from 'react';
+import {AbsoluteFill, Easing, Img, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import '@fontsource/montserrat/600.css';
+import '@fontsource/montserrat/800.css';
+
+/**
+ * ProdottoSingolo — un prodotto grande sopra il sito luminoso che scende piano:
+ * entra, gira a 360° (davanti e dietro, con spessore), si smonta in pezzi e si rimonta,
+ * poi nome e logo. Tutto in CSS 3D (niente WebGL): veloce da esportare in 4K.
+ */
+export type ProdottoSingoloProps = {
+  sfondo: string;
+  fronte: string;
+  retro: string;
+  aspetto: number; // larghezza/altezza dell'immagine frontale
+  larghezza: number; // px nel video (1080 di larghezza)
+  nome: string;
+  logo: string;
+  oro: string;
+  durata: number;
+};
+
+const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
+const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const rnd = (i: number, k: number) => {
+  const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+// tempi (secondi)
+const T_GIRO = [1.5, 6.3];
+const T_SMONTA = 6.6;
+const T_FINALE_D = 3.4; // gli ultimi secondi: nome e logo
+
+export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
+  const frame = useCurrentFrame();
+  const {fps, durationInFrames} = useVideoConfig();
+  const t = frame / fps;
+  const W = p.larghezza;
+  const H = W / p.aspetto;
+  const tFinale = p.durata - T_FINALE_D;
+
+  // entrata dall'alto con molla
+  const entra = spring({frame: frame - 0.3 * fps, fps, config: {damping: 16, mass: 1.4, stiffness: 70}});
+  // giro completo a 360°
+  const giro = 360 * ease(THREE_clamp((t - T_GIRO[0]) / (T_GIRO[1] - T_GIRO[0])));
+  // dondolio dopo lo smontaggio
+  const dondolo = t > T_SMONTA + 2.4 ? Math.sin((t - T_SMONTA - 2.4) * 1.3) * 22 : 0;
+  const rotY = giro + dondolo;
+  const galleggia = Math.sin(t * 1.4) * 14;
+  // smontaggio: 0..1
+  const s = t - T_SMONTA;
+  const espl = s < 0 ? 0 : s < 0.55 ? ease(s / 0.55) : s < 1.3 ? 1 : s < 2.2 ? 1 - ease((s - 1.3) / 0.9) : 0;
+  const inPezzi = s > 0 && s < 2.2;
+  const lampo = Math.exp(-Math.abs(s - 2.2) * 8) * 0.55;
+  // finale: il prodotto sale e rimpicciolisce un po', compaiono nome e logo
+  const fin = ease(THREE_clamp((t - tFinale) / 1.0));
+  const scala = (1 + 0.06 * Math.sin(t * 0.6)) * (1 - 0.22 * fin);
+  const sali = -260 * fin;
+  const nomeIn = interpolate(t, [tFinale + 0.4, tFinale + 1.1], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const logoIn = interpolate(t, [tFinale + 0.9, tFinale + 1.6], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  // riflesso di luce che attraversa il fronte
+  const riflesso = ((t * 0.45) % 1.6) * 100 - 30;
+  const chiudi = interpolate(frame, [durationInFrames - 12, durationInFrames - 1], [0, 1], clamp);
+  const apri = interpolate(frame, [0, 10], [1, 0], clamp);
+
+  const strati = 14; // spessore
+  const cx = 540 - W / 2;
+  const cy = 860 - H / 2 + galleggia + sali + (1 - entra) * -1500;
+
+  const pezzi: React.ReactNode[] = [];
+  if (inPezzi) {
+    const C = 6, R = 6;
+    for (let r = 0; r < R; r++)
+      for (let c = 0; c < C; c++) {
+        const i = r * C + c;
+        const pw = W / C, ph = H / R;
+        const px = c * pw, py = r * ph;
+        const dx = (px + pw / 2 - W / 2), dy = (py + ph / 2 - H / 2);
+        const len = Math.hypot(dx, dy) || 1;
+        const d = (180 + rnd(i, 1) * 320) * espl;
+        pezzi.push(
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: px,
+              top: py,
+              width: pw + 1,
+              height: ph + 1,
+              backgroundImage: `url(${staticFile(p.fronte)})`,
+              backgroundSize: `${W}px ${H}px`,
+              backgroundPosition: `${-px}px ${-py}px`,
+              transform: `translate3d(${(dx / len) * d + (rnd(i, 2) - 0.5) * 120 * espl}px, ${(dy / len) * d + (rnd(i, 3) - 0.5) * 120 * espl}px, ${rnd(i, 4) * 500 * espl}px) rotateX(${(rnd(i, 5) - 0.5) * 220 * espl}deg) rotateY(${(rnd(i, 6) - 0.5) * 220 * espl}deg) rotateZ(${(rnd(i, 7) - 0.5) * 120 * espl}deg)`,
+              filter: 'drop-shadow(0 10px 14px rgba(0,0,0,0.35))',
+            }}
+          />,
+        );
+      }
+  }
+
+  return (
+    <AbsoluteFill style={{background: '#efe6d6', overflow: 'hidden'}}>
+      {/* il sito che scende piano piano, luminoso */}
+      <AbsoluteFill style={{perspective: 1600}}>
+        <AbsoluteFill style={{transform: `scale(1.12) rotateX(${5 * Math.sin(t * 0.3)}deg)`, transformOrigin: '50% 50%'}}>
+          <OffthreadVideo src={staticFile(p.sfondo)} muted style={{width: '100%', height: '100%'}} />
+        </AbsoluteFill>
+      </AbsoluteFill>
+      {/* leggero velo chiaro dietro al prodotto, per farlo risaltare (non scuro) */}
+      <AbsoluteFill style={{background: 'radial-gradient(ellipse 70% 45% at 50% 45%, rgba(255,250,240,0.55) 0%, rgba(255,250,240,0) 75%)'}} />
+
+      {/* ombra morbida sotto il prodotto */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 540 - W * 0.45,
+          top: 860 + H / 2 + 60 + sali,
+          width: W * 0.9,
+          height: 70,
+          borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(40,30,20,0.35) 0%, rgba(40,30,20,0) 70%)',
+          transform: `scale(${(0.8 + 0.2 * entra) * (1 - galleggia / 200)})`,
+          opacity: entra,
+        }}
+      />
+
+      {/* il prodotto in 3D */}
+      <div style={{position: 'absolute', left: cx, top: cy, width: W, height: H, perspective: 2200}}>
+        <div style={{position: 'relative', width: W, height: H, transformStyle: 'preserve-3d', transform: `scale(${scala}) rotateY(${rotY}deg)`}}>
+          {inPezzi ? (
+            <div style={{position: 'absolute', inset: 0, transformStyle: 'preserve-3d'}}>{pezzi}</div>
+          ) : (
+            <>
+              {/* spessore: strati scuri tra davanti e dietro */}
+              {new Array(strati).fill(0).map((_, i) => (
+                <Img
+                  key={i}
+                  src={staticFile(p.fronte)}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: W,
+                    height: H,
+                    transform: `translateZ(${-i * 3}px)`,
+                    filter: 'brightness(0.32)',
+                  }}
+                />
+              ))}
+              {/* davanti */}
+              <div style={{position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'translateZ(1px)'}}>
+                <Img src={staticFile(p.fronte)} style={{width: W, height: H, display: 'block'}} />
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    WebkitMaskImage: `url(${staticFile(p.fronte)})`,
+                    WebkitMaskSize: '100% 100%',
+                    background: `linear-gradient(110deg, transparent ${riflesso - 12}%, rgba(255,255,255,0.45) ${riflesso}%, transparent ${riflesso + 12}%)`,
+                    mixBlendMode: 'screen',
+                  }}
+                />
+              </div>
+              {/* dietro */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backfaceVisibility: 'hidden',
+                  transform: `rotateY(180deg) translateZ(${strati * 3}px)`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Img src={staticFile(p.retro)} style={{maxWidth: W, maxHeight: H, objectFit: 'contain'}} />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* nome e logo nel finale */}
+      <div style={{position: 'absolute', left: 0, right: 0, top: 1330, textAlign: 'center', opacity: nomeIn, transform: `translateY(${(1 - nomeIn) * 30}px)`}}>
+        <div style={{height: 3, width: 160 * nomeIn, background: p.oro, margin: '0 auto 26px'}} />
+        <div style={{fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 92, letterSpacing: 4, color: '#171310'}}>{p.nome.toUpperCase()}</div>
+      </div>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 1530, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: logoIn}}>
+        <Img src={staticFile(p.logo)} style={{width: 560}} />
+        <div style={{marginTop: 22, fontFamily: 'Montserrat, sans-serif', fontWeight: 600, fontSize: 34, letterSpacing: 8, color: '#171310'}}>LEDINFINITY.EU</div>
+      </div>
+
+      <AbsoluteFill style={{background: 'radial-gradient(circle at 50% 45%, rgba(255,240,200,0.95) 0%, rgba(255,240,200,0) 55%)', opacity: lampo, mixBlendMode: 'screen'}} />
+      <AbsoluteFill style={{background: '#fff', opacity: Math.max(apri * 0.0, 0)}} />
+      <AbsoluteFill style={{background: '#000', opacity: Math.max(apri, chiudi)}} />
+    </AbsoluteFill>
+  );
+};
+
+function THREE_clamp(x: number) {
+  return Math.max(0, Math.min(1, x));
+}
