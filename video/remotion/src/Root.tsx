@@ -3,6 +3,7 @@ import {Composition} from 'remotion';
 import {Spot, SpotProps} from './Spot';
 import {Vetrina, VetrinaProps, durataVetrina} from './Vetrina';
 import {Trailer, TrailerProps} from './Trailer';
+import {Sinfonia, SinfoniaProps} from './Sinfonia';
 
 const FPS = 30;
 
@@ -35,8 +36,27 @@ const trailerDefault: TrailerProps = {
   durata: 25,
 };
 
+const sinfoniaDefault: SinfoniaProps = {
+  oro: '#C9A55C', sfondo: 'sito.mp4', logo: 'logo.png', battuta: 0.833, durata: 27,
+  intro: {fine: 4, riga1: 'Salumi', riga2: 'Seicolli'},
+  prosciutto: {img: 'prosciutto.png', grissini: 'grissini.png', inizio: 3.8, fine: 11.5, piccolo: '', grande: ''},
+  fette: {img: 'fette.png', inizio: 11, fine: 17, piccolo: '', grande: ''},
+  chef: {img: 'chef.png', inizio: 16.4, fine: 21.6, piccolo: '', grande: ''},
+  finale: {inizio: 21, riga1: 'Salumi', riga2: 'Seicolli', motto: '', slogan: '', sloganDa: 24, sito: ''},
+};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="Sinfonia"
+    component={Sinfonia}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={810}
+    defaultProps={sinfoniaDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round(props.durata * FPS)})}
+  />
   <Composition
     id="Trailer"
     component={Trailer}
