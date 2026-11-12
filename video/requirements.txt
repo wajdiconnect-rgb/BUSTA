@@ -2,3 +2,6 @@ moviepy==2.1.2
 edge-tts
 gradio_client
 pillow
+rembg[cpu]
+filetype
+scipy

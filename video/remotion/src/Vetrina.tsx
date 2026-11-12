@@ -24,13 +24,15 @@ import '@fontsource/playfair-display/400-italic.css';
 
 export type Scena = {
   img: string; // PNG trasparente in public
+  video?: string; // in alternativa: video con trasparenza (webm VP9 alpha)
+  giro3d?: boolean; // rotazione 3D lenta con riflesso di luce
   larghezza: number; // px a 1080
   x: number; // bordo sinistro finale
   y: number; // bordo alto finale
   rotazione?: number; // gradi finali
   etichetta: string; // piccola, maiuscola, oro
   titolo: string; // grande, serif
-  entrata?: 'alto' | 'destra';
+  entrata?: 'alto' | 'destra' | 'dissolvenza';
   testo?: 'alto' | 'basso';
   durata: number; // secondi
 };
@@ -65,12 +67,23 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
   });
   const deriva = interpolate(frame, [0, tot], [0, 1], clamp);
 
-  const da = s.entrata === 'destra' ? {dx: 900, dy: -120} : {dx: 0, dy: -1500};
+  const da =
+    s.entrata === 'destra'
+      ? {dx: 900, dy: -120}
+      : s.entrata === 'dissolvenza'
+        ? {dx: 0, dy: -90}
+        : {dx: 0, dy: -1500};
   const tx = s.x + da.dx * (1 - ingresso);
   const ty = s.y + da.dy * (1 - ingresso) + 40 * deriva + 1400 * uscita;
   const rot = (s.rotazione ?? 0) + (s.entrata === 'destra' ? 4 : -7) * (1 - ingresso) + 1.5 * deriva;
   const scala = 0.94 + 0.06 * ingresso + 0.05 * deriva;
   const opacita = Math.min(1, ingresso * 2.2) * (1 - uscita * 0.6);
+  // rotazione 3D: gira lentamente mostrando il profilo, poi torna frontale
+  const giroY = interpolate(frame, [0, tot * 0.45, tot], [-38, 22, -6], {
+    ...clamp,
+    easing: Easing.inOut(Easing.sin),
+  });
+  const riflesso = interpolate(frame, [0.8 * fps, 2.6 * fps], [-20, 130], clamp);
 
   // scritte
   const tEt = Math.round(0.6 * fps);
@@ -82,8 +95,7 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
 
   return (
     <AbsoluteFill>
-      <Img
-        src={staticFile(s.img)}
+      <div
         style={{
           position: 'absolute',
           left: 0,
@@ -92,9 +104,45 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
           transform: `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(${scala})`,
           transformOrigin: '50% 50%',
           opacity: opacita,
+          perspective: 1800,
           filter: 'drop-shadow(0 50px 45px rgba(0,0,0,0.6)) drop-shadow(0 10px 12px rgba(0,0,0,0.45))',
         }}
-      />
+      >
+        <div
+          style={{
+            position: 'relative',
+            transform: s.giro3d ? `rotateY(${giroY}deg)` : undefined,
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {s.video ? (
+            <OffthreadVideo
+              src={staticFile(s.video)}
+              transparent
+              muted
+              style={{
+                width: '100%',
+                display: 'block',
+                WebkitMaskImage: 'linear-gradient(180deg, transparent 0%, black 14%)',
+              }}
+            />
+          ) : (
+            <Img src={staticFile(s.img)} style={{width: '100%', display: 'block'}} />
+          )}
+          {s.giro3d ? (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                WebkitMaskImage: `url(${staticFile(s.img)})`,
+                WebkitMaskSize: '100% 100%',
+                background: `linear-gradient(100deg, transparent ${riflesso - 14}%, rgba(255,236,190,0.55) ${riflesso}%, transparent ${riflesso + 14}%)`,
+                mixBlendMode: 'screen',
+              }}
+            />
+          ) : null}
+        </div>
+      </div>
       <div
         style={{
           position: 'absolute',
