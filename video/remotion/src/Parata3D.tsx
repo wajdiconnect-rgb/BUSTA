@@ -81,7 +81,8 @@ export const Smontabile: React.FC<{
   t: number;
   spessore?: boolean;
   seme: number;
-}> = ({img, altezza, cols, rows, esplosione, t, spessore = true, seme}) => {
+  luce?: number; // 0 spento … 1 acceso
+}> = ({img, altezza, cols, rows, esplosione, t, spessore = true, seme, luce = 1}) => {
   const tex = useMemo(() => {
     const x = new THREE.Texture(img);
     x.colorSpace = THREE.SRGBColorSpace;
@@ -105,7 +106,7 @@ export const Smontabile: React.FC<{
         return (
           <group key={p.i} position={[x, y, z]} rotation={[rx, ry, rz]}>
             <mesh geometry={p.geo}>
-              <meshBasicMaterial map={tex} transparent alphaTest={0.08} side={THREE.DoubleSide} toneMapped={false} />
+              <meshBasicMaterial map={tex} transparent alphaTest={0.08} side={THREE.DoubleSide} toneMapped={false} color={new THREE.Color(luce, luce, luce)} />
             </mesh>
             {/* spessore: copia scura leggermente dietro, dà volume quando ruota */}
             {spessore ? (

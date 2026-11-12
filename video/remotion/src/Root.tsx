@@ -8,6 +8,7 @@ import {SitoVivo, SitoVivoProps, durataSitoVivo} from './SitoVivo';
 import {Infinity3D, Infinity3DProps} from './Infinity3D';
 import {Parata3D, Parata3DProps} from './Parata3D';
 import {Discesa3D, Discesa3DProps} from './Discesa3D';
+import {SitoTocco, SitoToccoProps, durataSitoTocco} from './SitoTocco';
 
 const FPS = 30;
 
@@ -62,8 +63,20 @@ const parataDefault: Parata3DProps = {sfondo: 'sito.mp4', prodotti: [], logo: 'l
 
 const discesaDefault: Discesa3DProps = {sfondo: 'sito.mp4', prodotto: 'p.png', altezza: 1.5, logo: 'logo.png', fermate: [2.0, 1.0, 0.1], durata: 22};
 
+const toccoDefault: SitoToccoProps = {alto: [], sfondoBanda: '#efe6d6', bandaY: 3070, cardW: 337, cardH: 1042, passoCard: 357, schede: [], logo: 'logo.png', durata: 28};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="SitoTocco"
+    component={SitoTocco}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={840}
+    defaultProps={toccoDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round((props.durata || durataSitoTocco(props.schede.length)) * FPS)})}
+  />
   <Composition
     id="Discesa3D"
     component={Discesa3D}
