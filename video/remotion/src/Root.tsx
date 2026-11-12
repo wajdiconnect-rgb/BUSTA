@@ -5,6 +5,7 @@ import {Vetrina, VetrinaProps, durataVetrina} from './Vetrina';
 import {Trailer, TrailerProps} from './Trailer';
 import {Sinfonia, SinfoniaProps} from './Sinfonia';
 import {SitoVivo, SitoVivoProps, durataSitoVivo} from './SitoVivo';
+import {Infinity3D, Infinity3DProps} from './Infinity3D';
 
 const FPS = 30;
 
@@ -51,8 +52,22 @@ const sitoDefault: SitoVivoProps = {
   finale: {titolo: '', slogan: '', pulsante: '', sito: '', durata: 5},
 };
 
+const infinityDefault: Infinity3DProps = {
+  contenuto: 'contenuto.png', logoSchermo: 'logo_schermo.png', sito: 'ledinfinity.eu', oro: '#D4A64A', durata: 22,
+};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="Infinity3D"
+    component={Infinity3D}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={660}
+    defaultProps={infinityDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round(props.durata * FPS)})}
+  />
   <Composition
     id="SitoVivo"
     component={SitoVivo}

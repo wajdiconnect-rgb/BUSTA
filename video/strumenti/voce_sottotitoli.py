@@ -24,6 +24,12 @@ VOCI = {
     "giuseppe": "it-IT-GiuseppeMultilingualNeural",
     "isabella": "it-IT-IsabellaNeural",
     "elsa": "it-IT-ElsaNeural",
+    # inglese
+    "andrew": "en-US-AndrewMultilingualNeural",
+    "christopher": "en-US-ChristopherNeural",
+    "guy": "en-US-GuyNeural",
+    "ryan": "en-GB-RyanNeural",
+    "thomas": "en-GB-ThomasNeural",
 }
 
 
