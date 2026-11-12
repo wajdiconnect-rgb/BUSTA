@@ -21,6 +21,8 @@ export type ProdottoSingoloProps = {
   /** video da mostrare DENTRO lo schermo del prodotto (es. la frutta) */
   schermo?: {video: string; maschera: string; box: {x: number; y: number; w: number; h: number}; pezzi: string};
   griglia?: number; // pezzi per lato nello smontaggio (default 6)
+  /** smontaggio REALE: i moduli dello schermo escono in avanti dal cabinet e rientrano */
+  moduli?: {cols: number; rows: number; vuoto: string};
 };
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -44,18 +46,21 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
   const tFinale = p.durata - T_FINALE_D;
 
   // entrata dall'alto con molla
-  const entra = spring({frame: frame - 0.3 * fps, fps, config: {damping: 16, mass: 1.4, stiffness: 70}});
+  const entra = p.moduli
+    ? ease(THREE_clamp((t - 0.2) / 2.4))
+    : spring({frame: frame - 0.3 * fps, fps, config: {damping: 16, mass: 1.4, stiffness: 70}});
   // giro completo a 360°
   const giro = 360 * ease(THREE_clamp((t - T_GIRO[0]) / (T_GIRO[1] - T_GIRO[0])));
   // dondolio dopo lo smontaggio
   const dondolo = t > T_SMONTA + 2.4 ? Math.sin((t - T_SMONTA - 2.4) * 1.3) * 22 : 0;
-  const rotY = giro + dondolo;
+  const rotY = p.moduli ? Math.sin(t * 0.55) * 26 * THREE_clamp((t - 1.5) / 2) : giro + dondolo;
   const galleggia = Math.sin(t * 1.4) * 14;
   // smontaggio: 0..1
   const s = t - T_SMONTA;
   const espl = s < 0 ? 0 : s < 0.55 ? ease(s / 0.55) : s < 1.3 ? 1 : s < 2.2 ? 1 - ease((s - 1.3) / 0.9) : 0;
-  const inPezzi = s > 0 && s < 2.2;
-  const lampo = Math.exp(-Math.abs(s - 2.2) * 8) * 0.55;
+  const inPezzi = !p.moduli && s > 0 && s < 2.2;
+  const inModuli = !!p.moduli && s > 0 && s < 3.0;
+  const lampo = Math.exp(-Math.abs(s - (p.moduli ? 2.75 : 2.2)) * 8) * 0.55;
   // finale: il prodotto sale e rimpicciolisce un po', compaiono nome e logo
   const fin = ease(THREE_clamp((t - tFinale) / 1.0));
   const scala = (1 + 0.06 * Math.sin(t * 0.6)) * (1 - 0.22 * fin);
@@ -71,6 +76,46 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
   const cx = 540 - W / 2;
   const cy = 860 - H / 2 + galleggia + sali + (1 - entra) * -1500;
 
+  const moduli: React.ReactNode[] = [];
+  if (inModuli && p.moduli && p.schermo) {
+    const {cols: C, rows: R} = p.moduli;
+    const b = p.schermo.box;
+    const bx = b.x * W, by = b.y * H, bw = b.w * W, bh = b.h * H;
+    for (let r = 0; r < R; r++)
+      for (let c = 0; c < C; c++) {
+        const i = r * C + c;
+        const d = (c + r) * 0.08; // onda diagonale
+        const fuori = ease(THREE_clamp((s - d) / 0.5)) * (1 - ease(THREE_clamp((s - 1.7 - d) / 0.55)));
+        const mw = bw / C, mh = bh / R;
+        const mx = bx + c * mw, my = by + r * mh;
+        const dx = mx + mw / 2 - (bx + bw / 2), dy = my + mh / 2 - (by + bh / 2);
+        moduli.push(
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: mx,
+              top: my,
+              width: mw,
+              height: mh,
+              transform: `translate3d(${dx * 0.18 * fuori}px, ${dy * 0.18 * fuori}px, ${260 * fuori}px) rotateX(${-dy * 0.02 * fuori}deg) rotateY(${dx * 0.02 * fuori}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: `url(${staticFile(p.schermo.pezzi)})`,
+                backgroundSize: `${W}px ${H}px`,
+                backgroundPosition: `${-mx}px ${-my}px`,
+                boxShadow: `0 0 0 ${2 * fuori}px rgba(20,20,24,0.9), 0 ${30 * fuori}px ${50 * fuori}px rgba(0,0,0,${0.45 * fuori})`,
+              }}
+            />
+          </div>,
+        );
+      }
+  }
   const pezzi: React.ReactNode[] = [];
   if (inPezzi) {
     const C = p.griglia ?? 6, R = Math.round((p.griglia ?? 6) * 1.25);
@@ -151,9 +196,10 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
                 />
               ))}
               {/* davanti */}
-              <div style={{position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'translateZ(1px)'}}>
-                <Img src={staticFile(p.fronte)} style={{width: W, height: H, display: 'block'}} />
-                {p.schermo ? (
+              <div style={{position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'translateZ(1px)', transformStyle: 'preserve-3d'}}>
+                <Img src={staticFile(inModuli && p.moduli ? p.moduli.vuoto : p.fronte)} style={{width: W, height: H, display: 'block'}} />
+                {inModuli ? <div style={{position: 'absolute', inset: 0, transformStyle: 'preserve-3d'}}>{moduli}</div> : null}
+                {p.schermo && !inModuli ? (
                   <div
                     style={{
                       position: 'absolute',
