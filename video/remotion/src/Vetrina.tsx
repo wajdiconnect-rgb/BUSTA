@@ -26,6 +26,7 @@ export type Scena = {
   img: string; // PNG trasparente in public
   video?: string; // in alternativa: video con trasparenza (webm VP9 alpha)
   giro3d?: boolean; // rotazione 3D lenta con riflesso di luce
+  ampiezza3d?: number; // 1 = giro ampio (prosciutto), 0.2 = oscillazione leggera
   larghezza: number; // px a 1080
   x: number; // bordo sinistro finale
   y: number; // bordo alto finale
@@ -47,6 +48,7 @@ export type VetrinaProps = {
     riga2: string;
     motto: string;
     sito: string;
+    slogan?: string;
     durata: number;
   };
   oro: string;
@@ -73,16 +75,21 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
       : s.entrata === 'dissolvenza'
         ? {dx: 0, dy: -90}
         : {dx: 0, dy: -1500};
-  const tx = s.x + da.dx * (1 - ingresso);
-  const ty = s.y + da.dy * (1 - ingresso) + 40 * deriva + 1400 * uscita;
+  const esceADestra = s.entrata === 'destra';
+  const tx = s.x + da.dx * (1 - ingresso) + (esceADestra ? 1300 * uscita : 0);
+  const ty = s.y + da.dy * (1 - ingresso) + 40 * deriva + (esceADestra ? 0 : 1400 * uscita);
   const rot = (s.rotazione ?? 0) + (s.entrata === 'destra' ? 4 : -7) * (1 - ingresso) + 1.5 * deriva;
   const scala = 0.94 + 0.06 * ingresso + 0.05 * deriva;
   const opacita = Math.min(1, ingresso * 2.2) * (1 - uscita * 0.6);
   // rotazione 3D: gira lentamente mostrando il profilo, poi torna frontale
-  const giroY = interpolate(frame, [0, tot * 0.45, tot], [-38, 22, -6], {
-    ...clamp,
-    easing: Easing.inOut(Easing.sin),
-  });
+  const amp = s.ampiezza3d ?? 1;
+  const giroY =
+    amp *
+    interpolate(frame, [0, tot * 0.45, tot], [-38, 22, -6], {
+      ...clamp,
+      easing: Easing.inOut(Easing.sin),
+    });
+  const giroX = amp < 1 ? 4 * Math.sin((frame / fps) * 0.9) : 0;
   const riflesso = interpolate(frame, [0.8 * fps, 2.6 * fps], [-20, 130], clamp);
 
   // scritte
@@ -111,7 +118,7 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
         <div
           style={{
             position: 'relative',
-            transform: s.giro3d ? `rotateY(${giroY}deg)` : undefined,
+            transform: s.giro3d ? `rotateY(${giroY}deg) rotateX(${giroX}deg)` : undefined,
             transformStyle: 'preserve-3d',
           }}
         >
@@ -129,7 +136,7 @@ const Prodotto: React.FC<{s: Scena; oro: string}> = ({s, oro}) => {
           ) : (
             <Img src={staticFile(s.img)} style={{width: '100%', display: 'block'}} />
           )}
-          {s.giro3d ? (
+          {s.giro3d && !s.video ? (
             <div
               style={{
                 position: 'absolute',
@@ -204,6 +211,7 @@ const Finale: React.FC<{f: VetrinaProps['finale']; oro: string}> = ({f, oro}) =>
   const r2 = interpolate(frame, [30, 50], [0, 1], clamp);
   const motto = interpolate(frame, [48, 70], [0, 1], clamp);
   const sito = interpolate(frame, [64, 84], [0, 1], clamp);
+  const slogan = interpolate(frame, [150, 175], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
   // riflesso di luce che attraversa il logo
   const riflesso = interpolate(frame, [30, 62], [-60, 160], clamp);
   const nero = interpolate(frame, [durationInFrames - 10, durationInFrames - 1], [0, 1], clamp);
@@ -298,6 +306,24 @@ const Finale: React.FC<{f: VetrinaProps['finale']; oro: string}> = ({f, oro}) =>
         >
           {f.sito}
         </div>
+        {f.slogan ? (
+          <div
+            style={{
+              marginTop: 70,
+              fontFamily: '"Playfair Display", Georgia, serif',
+              fontWeight: 600,
+              fontSize: 64,
+              lineHeight: 1.15,
+              color: oro,
+              padding: '0 70px',
+              opacity: slogan,
+              transform: `translateY(${(1 - slogan) * 30}px) scale(${0.96 + 0.04 * slogan})`,
+              textShadow: '0 6px 30px rgba(0,0,0,0.6)',
+            }}
+          >
+            {f.slogan}
+          </div>
+        ) : null}
       </div>
       <AbsoluteFill style={{background: 'black', opacity: nero}} />
     </AbsoluteFill>
@@ -319,7 +345,16 @@ export const Vetrina: React.FC<VetrinaProps> = ({sfondo, scene, sovrapposizione,
 
   return (
     <AbsoluteFill style={{backgroundColor: '#140f0b'}}>
-      <OffthreadVideo src={staticFile(sfondo)} muted style={{width: '100%', height: '100%'}} />
+      <AbsoluteFill style={{perspective: 1400, overflow: 'hidden'}}>
+        <AbsoluteFill
+          style={{
+            transform: `scale(1.32) rotateX(${12 - 7 * Math.min(1, frame / 600)}deg) rotateY(${4 * Math.sin(frame / 140)}deg) translateZ(0px)`,
+            transformOrigin: '50% 60%',
+          }}
+        >
+          <OffthreadVideo src={staticFile(sfondo)} muted style={{width: '100%', height: '100%'}} />
+        </AbsoluteFill>
+      </AbsoluteFill>
       <AbsoluteFill
         style={{
           background: `radial-gradient(ellipse at ${lx}% 35%, rgba(255,200,120,0.10) 0%, rgba(0,0,0,0) 45%),
