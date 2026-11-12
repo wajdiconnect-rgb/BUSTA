@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {AbsoluteFill, continueRender, delayRender, interpolate, Easing, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, OffthreadVideo, continueRender, delayRender, interpolate, Easing, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {ThreeCanvas} from '@remotion/three';
 import {useThree} from '@react-three/fiber';
 import * as THREE from 'three';
@@ -19,6 +19,7 @@ export type Infinity3DProps = {
   sito: string;
   oro: string;
   durata: number;
+  sfondo?: string; // video del sito che scorre dietro la scena 3D
 };
 
 const COLS = 4;
@@ -301,7 +302,7 @@ const Scena: React.FC<{p: Infinity3DProps; t: number; contenuto: HTMLImageElemen
   return (
     <>
       <Telecamera t={t} />
-      <color attach="background" args={['#040306']} />
+      {p.sfondo ? null : <color attach="background" args={['#040306']} />}
       <fog attach="fog" args={['#040306', 5, 20]} />
       <ambientLight intensity={0.9} />
       <hemisphereLight args={['#ffe9c4', '#101018', 0.8]} />
@@ -314,7 +315,7 @@ const Scena: React.FC<{p: Infinity3DProps; t: number; contenuto: HTMLImageElemen
       <group scale={[1, -1, 1]}>{new Array(N).fill(0).map((_, i) => <Pannello key={i} i={i} t={t} contenuto={contenuto} logo={logo} aspetto={aspetto} aspettoLogo={aspettoLogo} />)}</group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
         <planeGeometry args={[60, 60]} />
-        <meshStandardMaterial color={'#07070a'} metalness={0.6} roughness={0.35} transparent opacity={0.82} />
+        <meshStandardMaterial color={'#07070a'} metalness={0.6} roughness={0.35} transparent opacity={p.sfondo ? 0.55 : 0.82} />
       </mesh>
       {/* corsia luminosa */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, -7]}>
@@ -339,8 +340,28 @@ export const Infinity3D: React.FC<Infinity3DProps> = (p) => {
   const sito = interpolate(t, [T_LOGO + 1.6, T_LOGO + 2.4], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
   return (
     <AbsoluteFill style={{background: '#040306'}}>
+      {p.sfondo ? (
+        <>
+          <AbsoluteFill style={{perspective: 1400, overflow: 'hidden'}}>
+            <AbsoluteFill
+              style={{
+                transform: `scale(1.3) rotateX(${10 - 6 * Math.min(1, frame / 600)}deg) rotateY(${4 * Math.sin(frame / 140)}deg)`,
+                transformOrigin: '50% 60%',
+              }}
+            >
+              <OffthreadVideo src={staticFile(p.sfondo)} muted style={{width: '100%', height: '100%'}} />
+            </AbsoluteFill>
+          </AbsoluteFill>
+          <AbsoluteFill
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(4,3,6,0.55) 0%, rgba(4,3,6,0.35) 35%, rgba(4,3,6,0.55) 62%, rgba(4,3,6,0.92) 100%)',
+            }}
+          />
+        </>
+      ) : null}
       {contenuto && logo ? (
-        <ThreeCanvas width={width} height={height} camera={{fov: 42, near: 0.1, far: 60, position: [0, 1, 6]}} gl={{antialias: true}}>
+        <ThreeCanvas width={width} height={height} camera={{fov: 42, near: 0.1, far: 60, position: [0, 1, 6]}} gl={{antialias: true, alpha: true}}>
           <Scena p={p} t={t} contenuto={contenuto} logo={logo} frameVideo={frameVideo} />
         </ThreeCanvas>
       ) : null}
