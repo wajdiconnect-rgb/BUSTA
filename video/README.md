@@ -4,17 +4,17 @@ Dai una foto e una frase che descrive l'effetto, ottieni un video pubblicitario
 verticale (1080x1920, 30 fps, audio a -14 LUFS) pronto per Instagram Reels e TikTok.
 
 ```
-./spot mela.jpg "la mela si sbuccia da sola" --titolo "Mele appena colte" --cta "Ordina ora"
+./spot prosciutto.jpg "il prosciutto si affetta piano piano" --titolo "Prosciutto di Parma" --cta "Ordina ora"
 ```
 
-Oppure in Claude Code: `/spot mela.jpg "la mela si sbuccia da sola"`. Claude scrive
+Oppure in Claude Code: `/spot prosciutto.jpg "il prosciutto si affetta piano piano"`. Claude scrive
 titolo, voce e prompt AI per te, crea il video e controlla il risultato.
 
 ## Cosa fa ogni strumento
 
 | Strumento | Ruolo |
 |---|---|
-| **Wan 2.2 / LTX-Video** (Hugging Face, gratis) | anima la foto con l'AI: la mela si sbuccia, il latte scende, la bottiglia si apre |
+| **Wan 2.2 / LTX-Video** (Hugging Face, gratis) | anima la foto con l'AI: il prosciutto si affetta, il latte scende, la bottiglia si apre |
 | **MoviePy** | montaggio: effetto AI in slow motion, poi chiusura sul prodotto in dissolvenza |
 | **Remotion** | scritte animate: marchio, titolo parola per parola, sottotitolo, pulsante CTA che pulsa |
 | **edge-tts** | voce fuori campo italiana (Isabella, Elsa, Diego, Giuseppe) |
@@ -64,6 +64,47 @@ Con l'account gratuito hai alcuni minuti di GPU al giorno, cioè diversi video.
 - Per la musica usa brani senza diritti (YouTube Audio Library, Pixabay Music):
   quella generata è solo un sottofondo di riserva.
 - Le scritte stanno fuori dalle zone coperte dai pulsanti di TikTok e Instagram.
+
+## Stile "Vetrina" (spot premium, come Salumi Sei Colli)
+
+Il sito del cliente scorre in 3D sullo sfondo, i prodotti scontornati scendono e
+ruotano sopra, clip AI (es. Kling) senza sfondo, chiusura con logo e slogan.
+Composizione: `remotion/src/Vetrina.tsx`; esempio completo: `esempi/seicolli_vetrina.json`.
+
+```
+cd video/remotion
+npx remotion render src/index.ts Vetrina uscita.mp4 --props=../esempi/seicolli_vetrina.json \
+  --public-dir=CARTELLA_CON_FOTO_E_SITO --scale=2      # --scale=2 = 4K (2160x3840)
+```
+
+Effetti da accendere nel JSON, sotto `"effetti"`:
+
+| Chiave | Effetto |
+|---|---|
+| `polvere` | polvere dorata che fluttua in profondità |
+| `bokeh` | grandi luci calde sfocate, atmosfera da ristorante |
+| `luci` | lampo di luce calda a ogni cambio scena |
+| `grana` | grana pellicola cinematografica |
+| `vignetta` | bordi scuri, l'occhio va al centro |
+| `scia` | scia di movimento sui prodotti (export ~5 volte più lento) |
+| `sottotitoli` | sottotitoli animati parola per parola (da `voce_sottotitoli.py`) |
+
+## Strumenti extra (`strumenti/`)
+
+| Comando | A cosa serve |
+|---|---|
+| `foto_3d.py foto.jpg out.mp4 --movimento avvicina\|orbita\|sali` | l'AI calcola la profondità (Depth Anything V2) e crea un vero movimento di camera 3D da una foto ferma |
+| `ingrandisci.py foto.png foto_x2.png --scala 2` | ingrandimento AI (Real-ESRGAN): foto piccole nitide per il 4K, mantiene la trasparenza |
+| `scontorna_video.py cartella_frame cartella_uscita` | toglie lo sfondo a ogni fotogramma di una clip (es. Kling) |
+| `voce_sottotitoli.py copione.txt voce.wav parole.json` | voce italiana + tempi di ogni parola per i sottotitoli |
+| `musica_orchestra.py musica.wav DURATA CLIMAX SLOGAN` | musica orchestrale originale con crescendo sul logo |
+| `finalizza.py video.mp4 audio.wav NOME --colore caldo\|cinema\|vivace` | colore cinematografico + file 4K, 1080 e copertina |
+
+Copione per `voce_sottotitoli.py` (secondi | frase):
+```
+0.8  | Prosciutto di Parma. Stagionato con pazienza.
+6.0  | Affettato al momento, sottile come seta.
+```
 
 ## Modificare la grafica delle scritte
 

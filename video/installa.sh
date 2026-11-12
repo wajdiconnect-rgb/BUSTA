@@ -21,10 +21,16 @@ fi
 (cd remotion && npm install --no-fund --no-audit)
 (cd remotion && npx remotion browser ensure) || true
 
-echo "4/4 Token gratuito Hugging Face (per gli effetti AI)"
+echo "4/5 Strumenti AI extra: foto 3D (Depth Anything) e ingrandimento (Real-ESRGAN)"
+if [ "$(uname)" = "Linux" ]; then
+  python3 -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+fi
+python3 -m pip install -r requirements-ai.txt
+
+echo "5/5 Token gratuito Hugging Face (per gli effetti AI)"
 if [ -z "$HF_TOKEN" ]; then
   echo "  Crea un token gratuito su https://huggingface.co/settings/tokens (tipo 'Read')"
   echo "  e aggiungi al tuo ~/.zshrc o ~/.bashrc:   export HF_TOKEN=hf_..."
 fi
-chmod +x spot
-echo "✅ Pronto. Prova:  ./spot foto.jpg \"la mela si sbuccia\""
+chmod +x spot strumenti/*.py
+echo "✅ Pronto. Prova:  ./spot prosciutto.jpg \"il prosciutto si affetta piano piano\""

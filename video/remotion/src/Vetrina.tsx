@@ -15,6 +15,8 @@ import '@fontsource/montserrat/600.css';
 import '@fontsource/montserrat/800.css';
 import '@fontsource/playfair-display/600.css';
 import '@fontsource/playfair-display/400-italic.css';
+import {CameraMotionBlur} from '@remotion/motion-blur';
+import {Bokeh, Grana, LuceCalda, Parola, PolvereDorata, Sottotitoli, Vignetta} from './Effetti';
 
 /**
  * "Vetrina": il sito del cliente scorre sullo sfondo, i prodotti scontornati
@@ -52,6 +54,15 @@ export type VetrinaProps = {
     durata: number;
   };
   oro: string;
+  effetti?: {
+    polvere?: boolean; // polvere dorata
+    bokeh?: boolean; // luci sfocate
+    luci?: boolean; // lampo di luce calda a ogni cambio scena
+    grana?: boolean; // grana pellicola
+    vignetta?: boolean;
+    scia?: boolean; // scia di movimento (più lento da esportare)
+    sottotitoli?: Parola[];
+  };
 };
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -332,7 +343,7 @@ const Finale: React.FC<{f: VetrinaProps['finale']; oro: string}> = ({f, oro}) =>
   );
 };
 
-export const Vetrina: React.FC<VetrinaProps> = ({sfondo, scene, sovrapposizione, finale, oro}) => {
+export const Vetrina: React.FC<VetrinaProps> = ({sfondo, scene, sovrapposizione, finale, oro, effetti = {}}) => {
   const {fps} = useVideoConfig();
   const frame = useCurrentFrame();
   let inizio = 0;
@@ -363,14 +374,30 @@ export const Vetrina: React.FC<VetrinaProps> = ({sfondo, scene, sovrapposizione,
              linear-gradient(180deg, rgba(10,7,5,0.82) 0%, rgba(10,7,5,0.45) 25%, rgba(10,7,5,0.45) 55%, rgba(10,7,5,0.9) 100%)`,
         }}
       />
+      {effetti.bokeh ? <Bokeh /> : null}
       {blocchi.map(({s, da}, i) => (
         <Sequence key={i} from={da} durationInFrames={Math.round(s.durata * fps)} layout="none">
-          <Prodotto s={s} oro={oro} />
+          {effetti.scia ? (
+            <CameraMotionBlur samples={5} shutterAngle={160}>
+              <Prodotto s={s} oro={oro} />
+            </CameraMotionBlur>
+          ) : (
+            <Prodotto s={s} oro={oro} />
+          )}
         </Sequence>
       ))}
+      {effetti.luci
+        ? [...blocchi.slice(1).map((b) => b.da), inizioFinale].map((da, i) => (
+            <LuceCalda key={i} da={da - 6} durata={28} />
+          ))
+        : null}
       <Sequence from={inizioFinale} durationInFrames={Math.round(finale.durata * fps)} layout="none">
         <Finale f={finale} oro={oro} />
       </Sequence>
+      {effetti.polvere ? <PolvereDorata /> : null}
+      {effetti.sottotitoli ? <Sottotitoli parole={effetti.sottotitoli} colore={oro} /> : null}
+      {effetti.vignetta ? <Vignetta /> : null}
+      {effetti.grana ? <Grana /> : null}
     </AbsoluteFill>
   );
 };

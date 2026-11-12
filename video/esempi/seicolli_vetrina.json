@@ -54,5 +54,12 @@
   "sito": "salumiseicolli.it",
   "durata": 11.0,
   "slogan": "Non siamo migliori, ma siamo diversi."
+ },
+ "effetti": {
+  "polvere": true,
+  "bokeh": true,
+  "luci": true,
+  "grana": true,
+  "vignetta": true
  }
 }
