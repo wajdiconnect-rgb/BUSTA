@@ -12,7 +12,9 @@ import '@fontsource/montserrat/600.css';
  * Tempi in secondi; composizione verticale 1080x1920 (export 4K con --scale=2).
  */
 export type Infinity3DProps = {
-  contenuto: string; // immagine che appare sullo schermo montato
+  contenuto: string; // immagine di riserva (se non c'è il video)
+  /** video vero sul maxischermo, come sequenza di fotogrammi: cartella in public con 0001.jpg, 0002.jpg… */
+  fotogrammi?: {cartella: string; quanti: number; fps: number; aspetto: number; da: number};
   logoSchermo: string; // immagine con il logo per il finale
   sito: string;
   oro: string;
@@ -69,6 +71,26 @@ function useImmagine(src: string): HTMLImageElement | null {
   return img;
 }
 
+/** carica il fotogramma del video giusto per l'istante t (ciclo continuo) prima di disegnare */
+function useFotogramma(f: Infinity3DProps['fotogrammi'], t: number): HTMLImageElement | null {
+  const idx = f ? (Math.floor(Math.max(0, t - f.da) * f.fps) % f.quanti) + 1 : 0;
+  const [img, setImg] = useState<HTMLImageElement | null>(null);
+  const [caricato, setCaricato] = useState(-1);
+  React.useEffect(() => {
+    if (!f || idx === caricato) return;
+    const h = delayRender('fotogramma ' + idx);
+    const im = new Image();
+    im.onload = () => {
+      setImg(im);
+      setCaricato(idx);
+      continueRender(h);
+    };
+    im.onerror = () => continueRender(h);
+    im.src = staticFile(`${f.cartella}/${String(idx).padStart(4, '0')}.jpg`);
+  }, [f, idx, caricato]);
+  return f && caricato === idx ? img : f ? null : null;
+}
+
 const pezzo = (img: HTMLImageElement, c: number, r: number) => {
   const t = new THREE.Texture(img);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -80,11 +102,40 @@ const pezzo = (img: HTMLImageElement, c: number, r: number) => {
 
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
-const Pannello: React.FC<{i: number; t: number; contenuto: HTMLImageElement; logo: HTMLImageElement}> = ({i, t, contenuto, logo}) => {
+/** piano dello schermo con le coordinate UV del suo pezzo (così tutti i pannelli condividono una texture) */
+const usePianoPezzo = (c: number, r: number, aspettoSorgente: number) =>
+  useMemo(() => {
+    const g = new THREE.PlaneGeometry(S * 0.96, S * 0.96);
+    const aspettoMuro = COLS / ROWS;
+    // ritaglio "cover" della sorgente sul muro
+    let u0 = 0, uw = 1, v0 = 0, vh = 1;
+    if (aspettoSorgente > aspettoMuro) {
+      uw = aspettoMuro / aspettoSorgente;
+      u0 = (1 - uw) / 2;
+    } else {
+      vh = aspettoSorgente / aspettoMuro;
+      v0 = (1 - vh) / 2;
+    }
+    const a0 = u0 + (c / COLS) * uw, a1 = u0 + ((c + 1) / COLS) * uw;
+    const b0 = v0 + (r / ROWS) * vh, b1 = v0 + ((r + 1) / ROWS) * vh;
+    const uv = g.attributes.uv as THREE.BufferAttribute;
+    uv.setXY(0, a0, b1); uv.setXY(1, a1, b1); uv.setXY(2, a0, b0); uv.setXY(3, a1, b0);
+    uv.needsUpdate = true;
+    return g;
+  }, [c, r, aspettoSorgente]);
+
+const Pannello: React.FC<{i: number; t: number; contenuto: THREE.Texture; logo: THREE.Texture; aspetto: number; aspettoLogo: number}> = ({
+  i,
+  t,
+  contenuto,
+  logo,
+  aspetto,
+  aspettoLogo,
+}) => {
   const c = i % COLS;
   const r = Math.floor(i / COLS);
-  // ogni pannello mostra il suo pezzo dell'immagine
-  const [texC, texL] = useMemo(() => [pezzo(contenuto, c, r), pezzo(logo, c, r)], [contenuto, logo, c, r]);
+  const pianoC = usePianoPezzo(c, r, aspetto);
+  const pianoL = usePianoPezzo(c, r, aspettoLogo);
 
   const metallo = useMemo(
     () => new THREE.MeshStandardMaterial({color: '#5a5e66', metalness: 0.7, roughness: 0.38}),
@@ -154,14 +205,12 @@ const Pannello: React.FC<{i: number; t: number; contenuto: HTMLImageElement; log
         <boxGeometry args={[S * 0.985, S * 0.985, 0.09]} />
       </mesh>
       {/* schermo: contenuto */}
-      <mesh position={[0, 0, 0.0455]}>
-        <planeGeometry args={[S * 0.96, S * 0.96]} />
-        <meshBasicMaterial map={texC} color={new THREE.Color(luce, luce, luce)} toneMapped={false} />
+      <mesh position={[0, 0, 0.0455]} geometry={pianoC}>
+        <meshBasicMaterial map={contenuto} color={new THREE.Color(luce, luce, luce)} toneMapped={false} />
       </mesh>
       {/* schermo: logo (dissolvenza sopra il contenuto) */}
-      <mesh position={[0, 0, 0.0462]}>
-        <planeGeometry args={[S * 0.96, S * 0.96]} />
-        <meshBasicMaterial map={texL} transparent opacity={logoMix} toneMapped={false} />
+      <mesh position={[0, 0, 0.0462]} geometry={pianoL}>
+        <meshBasicMaterial map={logo} transparent opacity={logoMix} toneMapped={false} />
       </mesh>
       {/* retro: maniglie e dettagli del cabinet */}
       <mesh position={[0, 0.12, -0.05]} material={metallo}>
@@ -225,8 +274,30 @@ const Scintille: React.FC<{t: number; oro: string}> = ({t, oro}) => {
   );
 };
 
-const Scena: React.FC<{p: Infinity3DProps; t: number; contenuto: HTMLImageElement; logo: HTMLImageElement}> = ({p, t, contenuto, logo}) => {
-  const pannelli = new Array(N).fill(0).map((_, i) => <Pannello key={i} i={i} t={t} contenuto={contenuto} logo={logo} />);
+const Scena: React.FC<{p: Infinity3DProps; t: number; contenuto: HTMLImageElement; logo: HTMLImageElement; frameVideo: HTMLImageElement | null}> = ({p, t, contenuto: imgC, logo: imgL, frameVideo}) => {
+  const vtex = useMemo(() => {
+    const x = new THREE.Texture();
+    x.colorSpace = THREE.SRGBColorSpace;
+    return x;
+  }, []);
+  if (frameVideo && vtex.image !== frameVideo) {
+    vtex.image = frameVideo;
+    vtex.needsUpdate = true;
+  }
+  const [texImg, texLogo] = useMemo(() => {
+    const a = new THREE.Texture(imgC);
+    const b = new THREE.Texture(imgL);
+    for (const x of [a, b]) {
+      x.colorSpace = THREE.SRGBColorSpace;
+      x.needsUpdate = true;
+    }
+    return [a, b];
+  }, [imgC, imgL]);
+  const contenuto = p.fotogrammi && frameVideo ? vtex : texImg;
+  const logo = texLogo;
+  const aspetto = p.fotogrammi ? p.fotogrammi.aspetto : imgC.width / imgC.height;
+  const aspettoLogo = imgL.width / imgL.height;
+  const pannelli = new Array(N).fill(0).map((_, i) => <Pannello key={i} i={i} t={t} contenuto={contenuto} logo={logo} aspetto={aspetto} aspettoLogo={aspettoLogo} />);
   return (
     <>
       <Telecamera t={t} />
@@ -240,7 +311,7 @@ const Scena: React.FC<{p: Infinity3DProps; t: number; contenuto: HTMLImageElemen
       <pointLight position={[3, 2, 2]} intensity={6} color={'#ff9a3a'} distance={10} />
       {pannelli}
       {/* riflesso sul pavimento bagnato: copia capovolta sotto un pavimento semitrasparente */}
-      <group scale={[1, -1, 1]}>{new Array(N).fill(0).map((_, i) => <Pannello key={i} i={i} t={t} contenuto={contenuto} logo={logo} />)}</group>
+      <group scale={[1, -1, 1]}>{new Array(N).fill(0).map((_, i) => <Pannello key={i} i={i} t={t} contenuto={contenuto} logo={logo} aspetto={aspetto} aspettoLogo={aspettoLogo} />)}</group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
         <planeGeometry args={[60, 60]} />
         <meshStandardMaterial color={'#07070a'} metalness={0.6} roughness={0.35} transparent opacity={0.82} />
@@ -264,12 +335,13 @@ export const Infinity3D: React.FC<Infinity3DProps> = (p) => {
   const chiudi = interpolate(frame, [durationInFrames - 18, durationInFrames - 1], [0, 1], clamp);
   const contenuto = useImmagine(p.contenuto);
   const logo = useImmagine(p.logoSchermo);
+  const frameVideo = useFotogramma(p.fotogrammi, t);
   const sito = interpolate(t, [T_LOGO + 1.6, T_LOGO + 2.4], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
   return (
     <AbsoluteFill style={{background: '#040306'}}>
       {contenuto && logo ? (
         <ThreeCanvas width={width} height={height} camera={{fov: 42, near: 0.1, far: 60, position: [0, 1, 6]}} gl={{antialias: true}}>
-          <Scena p={p} t={t} contenuto={contenuto} logo={logo} />
+          <Scena p={p} t={t} contenuto={contenuto} logo={logo} frameVideo={frameVideo} />
         </ThreeCanvas>
       ) : null}
       <AbsoluteFill
