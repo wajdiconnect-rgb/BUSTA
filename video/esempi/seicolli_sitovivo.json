@@ -9,9 +9,11 @@
    "titolo": "Dal nostro\nallevamento",
    "testo": "alla tua tavola, con la pazienza di sempre.",
    "pulsante": "Scopri la nostra storia",
-   "media": "ham3d.mp4",
-   "tipo": "scheda",
-   "durata": 5.0
+   "media": "prosciutto_rotante.webm",
+   "tipo": "esce",
+   "durata": 5.0,
+   "larghezzaMedia": 800,
+   "topMedia": 780
   },
   {
    "etichetta": "L'arte del taglio",

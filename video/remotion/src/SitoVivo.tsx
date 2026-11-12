@@ -31,6 +31,8 @@ export type Pagina = {
   pulsante?: string;
   media: string; // video in public
   tipo: 'scheda' | 'esce'; // scheda = dentro un riquadro; esce = trasparente, sborda dalla pagina
+  larghezzaMedia?: number; // solo 'esce': larghezza del video trasparente (default 1020)
+  topMedia?: number; // solo 'esce': posizione verticale (default 720)
   durata: number; // secondi sulla pagina
 };
 
@@ -182,9 +184,9 @@ const PaginaVista: React.FC<{p: Pagina; oro: string; locale: number; tot: number
           <div
             style={{
               position: 'absolute',
-              left: 30,
-              right: 30,
-              top: 720,
+              left: (1080 - (p.larghezzaMedia ?? 1020)) / 2,
+              width: p.larghezzaMedia ?? 1020,
+              top: p.topMedia ?? 720,
               opacity: media,
               filter: 'drop-shadow(0 40px 40px rgba(0,0,0,0.6))',
             }}
