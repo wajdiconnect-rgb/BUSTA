@@ -93,6 +93,7 @@ Effetti da accendere nel JSON, sotto `"effetti"`:
 
 | Comando | A cosa serve |
 |---|---|
+| `anima_ai.py foto.jpg out.mp4 --prompt "..." [--studio] [--scontorna] [--ingrandisci]` | **movimento vero con l'AI** (Wan 2.2 gratis su Hugging Face): fette che si sollevano, panino che si apre. Un movimento semplice per clip |
 | `foto_3d.py foto.jpg out.mp4 --movimento avvicina\|orbita\|sali` | l'AI calcola la profondità (Depth Anything V2) e crea un vero movimento di camera 3D da una foto ferma |
 | `ingrandisci.py foto.png foto_x2.png --scala 2` | ingrandimento AI (Real-ESRGAN): foto piccole nitide per il 4K, mantiene la trasparenza |
 | `scontorna_video.py cartella_frame cartella_uscita` | toglie lo sfondo a ogni fotogramma di una clip (es. Kling) |
