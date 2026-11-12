@@ -4,6 +4,7 @@ import {Spot, SpotProps} from './Spot';
 import {Vetrina, VetrinaProps, durataVetrina} from './Vetrina';
 import {Trailer, TrailerProps} from './Trailer';
 import {Sinfonia, SinfoniaProps} from './Sinfonia';
+import {SitoVivo, SitoVivoProps, durataSitoVivo} from './SitoVivo';
 
 const FPS = 30;
 
@@ -45,8 +46,23 @@ const sinfoniaDefault: SinfoniaProps = {
   finale: {inizio: 21, riga1: 'Salumi', riga2: 'Seicolli', motto: '', slogan: '', sloganDa: 24, sito: ''},
 };
 
+const sitoDefault: SitoVivoProps = {
+  oro: '#C9A55C', logo: 'logo.png', marchio: 'Marchio', scorrimento: 0.7, pagine: [],
+  finale: {titolo: '', slogan: '', pulsante: '', sito: '', durata: 5},
+};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="SitoVivo"
+    component={SitoVivo}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={600}
+    defaultProps={sitoDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round(durataSitoVivo(props) * FPS)})}
+  />
   <Composition
     id="Sinfonia"
     component={Sinfonia}
