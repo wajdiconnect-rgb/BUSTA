@@ -1,0 +1,63 @@
+{
+ "sfondo": "sito.mp4",
+ "sovrapposizione": 0.6,
+ "oro": "#C9A55C",
+ "scene": [
+  {
+   "img": "prosciutto.png",
+   "larghezza": 1110,
+   "x": -20,
+   "y": 330,
+   "rotazione": 0,
+   "etichetta": "Prosciutto di Parma",
+   "titolo": "Stagionato con pazienza",
+   "entrata": "alto",
+   "testo": "alto",
+   "durata": 5.2
+  },
+  {
+   "img": "chef.png",
+   "larghezza": 1150,
+   "x": -60,
+   "y": -30,
+   "rotazione": 0,
+   "etichetta": "Affettato al momento",
+   "titolo": "Sottile come seta",
+   "entrata": "destra",
+   "testo": "basso",
+   "durata": 4.4
+  },
+  {
+   "img": "pancetta.png",
+   "larghezza": 1180,
+   "x": -50,
+   "y": -300,
+   "rotazione": 0,
+   "etichetta": "Pancetta stagionata",
+   "titolo": "Gusto e tradizione in ogni fetta",
+   "entrata": "alto",
+   "testo": "basso",
+   "durata": 6.0
+  },
+  {
+   "img": "panino.png",
+   "larghezza": 940,
+   "x": 70,
+   "y": 170,
+   "rotazione": 2,
+   "etichetta": "Dal nostro allevamento",
+   "titolo": "Alla tua tavola",
+   "entrata": "alto",
+   "testo": "basso",
+   "durata": 4.4
+  }
+ ],
+ "finale": {
+  "logo": "logo.png",
+  "riga1": "Salumi",
+  "riga2": "Seicolli",
+  "motto": "La tradizione che si rinnova a ogni taglio",
+  "sito": "salumiseicolli.it",
+  "durata": 7.0
+ }
+}
