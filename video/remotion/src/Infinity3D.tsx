@@ -74,21 +74,21 @@ function useImmagine(src: string): HTMLImageElement | null {
 /** carica il fotogramma del video giusto per l'istante t (ciclo continuo) prima di disegnare */
 function useFotogramma(f: Infinity3DProps['fotogrammi'], t: number): HTMLImageElement | null {
   const idx = f ? (Math.floor(Math.max(0, t - f.da) * f.fps) % f.quanti) + 1 : 0;
-  const [img, setImg] = useState<HTMLImageElement | null>(null);
-  const [caricato, setCaricato] = useState(-1);
-  React.useEffect(() => {
-    if (!f || idx === caricato) return;
+  const [pronti, setPronti] = useState<Record<number, HTMLImageElement>>({});
+  // il blocco del render parte SUBITO (durante il render, non dopo): Remotion aspetta il fotogramma giusto
+  useMemo(() => {
+    if (!f || pronti[idx]) return;
     const h = delayRender('fotogramma ' + idx);
     const im = new Image();
     im.onload = () => {
-      setImg(im);
-      setCaricato(idx);
+      setPronti((p) => ({...p, [idx]: im}));
       continueRender(h);
     };
     im.onerror = () => continueRender(h);
     im.src = staticFile(`${f.cartella}/${String(idx).padStart(4, '0')}.jpg`);
-  }, [f, idx, caricato]);
-  return f && caricato === idx ? img : f ? null : null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [f, idx]);
+  return f ? pronti[idx] ?? null : null;
 }
 
 const pezzo = (img: HTMLImageElement, c: number, r: number) => {
@@ -293,7 +293,7 @@ const Scena: React.FC<{p: Infinity3DProps; t: number; contenuto: HTMLImageElemen
     }
     return [a, b];
   }, [imgC, imgL]);
-  const contenuto = p.fotogrammi && frameVideo ? vtex : texImg;
+  const contenuto = p.fotogrammi ? vtex : texImg;
   const logo = texLogo;
   const aspetto = p.fotogrammi ? p.fotogrammi.aspetto : imgC.width / imgC.height;
   const aspettoLogo = imgL.width / imgL.height;
