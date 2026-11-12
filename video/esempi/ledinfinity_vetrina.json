@@ -1,0 +1,89 @@
+{
+ "sfondo": "sito.mp4",
+ "sovrapposizione": 0.6,
+ "oro": "#D4A64A",
+ "scene": [
+  {
+   "img": "grand.png",
+   "giro3d": true,
+   "ampiezza3d": 0.6,
+   "larghezza": 760,
+   "x": 160,
+   "y": 600,
+   "etichetta": "Outdoor · 10.000 nit · IP67",
+   "titolo": "Infinity Grand",
+   "entrata": "alto",
+   "testo": "alto",
+   "durata": 4.6
+  },
+  {
+   "img": "pad.png",
+   "giro3d": true,
+   "ampiezza3d": 0.6,
+   "larghezza": 620,
+   "x": 230,
+   "y": 480,
+   "etichetta": "Indoor fine pitch · 35 mm",
+   "titolo": "Infinity Pad",
+   "entrata": "alto",
+   "testo": "alto",
+   "durata": 4.6
+  },
+  {
+   "img": "totem.png",
+   "giro3d": true,
+   "ampiezza3d": 0.6,
+   "larghezza": 500,
+   "x": 290,
+   "y": 440,
+   "etichetta": "Totem outdoor · 4500 nit",
+   "titolo": "Infinity Totem",
+   "entrata": "alto",
+   "testo": "alto",
+   "durata": 4.6
+  },
+  {
+   "img": "stage.png",
+   "giro3d": true,
+   "ampiezza3d": 0.6,
+   "larghezza": 980,
+   "x": 50,
+   "y": 640,
+   "etichetta": "Noleggio · concerti e fiere",
+   "titolo": "Infinity Stage",
+   "entrata": "alto",
+   "testo": "alto",
+   "durata": 4.6
+  },
+  {
+   "img": "flex.png",
+   "giro3d": true,
+   "ampiezza3d": 0.6,
+   "larghezza": 900,
+   "x": 90,
+   "y": 660,
+   "etichetta": "Progetti creativi · curvo",
+   "titolo": "Infinity Flex",
+   "entrata": "alto",
+   "testo": "alto",
+   "durata": 4.6
+  }
+ ],
+ "finale": {
+  "logo": "logo.png",
+  "logoW": 780,
+  "logoH": 175,
+  "riga1": "",
+  "riga2": "",
+  "motto": "Schermi LED su misura per chi vuole distinguersi",
+  "sito": "ledinfinity.eu",
+  "slogan": "",
+  "durata": 7.0
+ },
+ "effetti": {
+  "polvere": true,
+  "luci": true,
+  "grana": true,
+  "vignetta": true
+ }
+}

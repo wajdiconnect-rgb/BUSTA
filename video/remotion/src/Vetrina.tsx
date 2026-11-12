@@ -47,6 +47,8 @@ export type VetrinaProps = {
   sovrapposizione: number; // secondi di incrocio tra scene
   finale: {
     logo: string;
+    logoW?: number; // larghezza del logo (default 340, quadrato)
+    logoH?: number;
     riga1: string;
     riga2: string;
     motto: string;
@@ -257,8 +259,8 @@ const Finale: React.FC<{f: VetrinaProps['finale']; oro: string}> = ({f, oro}) =>
         <div
           style={{
             position: 'relative',
-            width: 340,
-            height: 338,
+            width: f.logoW ?? 340,
+            height: f.logoH ?? 338,
             margin: '0 auto',
             opacity: logo,
             transform: `scale(${0.85 + 0.15 * logo}) translateY(${(1 - logo) * 40}px)`,
