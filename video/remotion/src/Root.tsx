@@ -6,6 +6,7 @@ import {Trailer, TrailerProps} from './Trailer';
 import {Sinfonia, SinfoniaProps} from './Sinfonia';
 import {SitoVivo, SitoVivoProps, durataSitoVivo} from './SitoVivo';
 import {Infinity3D, Infinity3DProps} from './Infinity3D';
+import {Parata3D, Parata3DProps} from './Parata3D';
 
 const FPS = 30;
 
@@ -56,8 +57,20 @@ const infinityDefault: Infinity3DProps = {
   contenuto: 'contenuto.png', logoSchermo: 'logo_schermo.png', sito: 'ledinfinity.eu', oro: '#D4A64A', durata: 22,
 };
 
+const parataDefault: Parata3DProps = {sfondo: 'sito.mp4', prodotti: [], logo: 'logo.png', passo: 3.5, durata: 25};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="Parata3D"
+    component={Parata3D}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={750}
+    defaultProps={parataDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round(props.durata * FPS)})}
+  />
   <Composition
     id="Infinity3D"
     component={Infinity3D}
