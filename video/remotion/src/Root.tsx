@@ -7,6 +7,7 @@ import {Sinfonia, SinfoniaProps} from './Sinfonia';
 import {SitoVivo, SitoVivoProps, durataSitoVivo} from './SitoVivo';
 import {Infinity3D, Infinity3DProps} from './Infinity3D';
 import {Parata3D, Parata3DProps} from './Parata3D';
+import {Discesa3D, Discesa3DProps} from './Discesa3D';
 
 const FPS = 30;
 
@@ -59,8 +60,20 @@ const infinityDefault: Infinity3DProps = {
 
 const parataDefault: Parata3DProps = {sfondo: 'sito.mp4', prodotti: [], logo: 'logo.png', passo: 3.5, durata: 25};
 
+const discesaDefault: Discesa3DProps = {sfondo: 'sito.mp4', prodotto: 'p.png', altezza: 1.5, logo: 'logo.png', fermate: [2.0, 1.0, 0.1], durata: 22};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="Discesa3D"
+    component={Discesa3D}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={660}
+    defaultProps={discesaDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round(props.durata * FPS)})}
+  />
   <Composition
     id="Parata3D"
     component={Parata3D}

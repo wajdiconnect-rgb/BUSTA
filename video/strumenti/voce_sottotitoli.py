@@ -30,6 +30,13 @@ VOCI = {
     "guy": "en-US-GuyNeural",
     "ryan": "en-GB-RyanNeural",
     "thomas": "en-GB-ThomasNeural",
+    # francese, spagnolo, tedesco, arabo
+    "henri": "fr-FR-HenriNeural",
+    "remy": "fr-FR-RemyMultilingualNeural",
+    "denise": "fr-FR-DeniseNeural",
+    "alvaro": "es-ES-AlvaroNeural",
+    "conrad": "de-DE-ConradNeural",
+    "hamed": "ar-SA-HamedNeural",
 }
 
 

@@ -22,10 +22,10 @@ const rnd = (i: number, k: number) => {
   const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
   return x - Math.floor(x);
 };
-const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+export const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const sm = (a: number, b: number, x: number) => THREE.MathUtils.smoothstep(x, a, b);
 
-function useImmagini(srcs: string[]) {
+export function useImmagini(srcs: string[]) {
   const [handle] = useState(() => delayRender('immagini prodotti'));
   const [imgs, setImgs] = useState<HTMLImageElement[] | null>(null);
   React.useEffect(() => {
@@ -72,7 +72,7 @@ const usePezzi = (img: HTMLImageElement, altezza: number, cols: number, rows: nu
   }, [img, altezza, cols, rows]);
 
 /** un oggetto fatto di pezzi che può smontarsi (k = 0 montato, 1 esploso) */
-const Smontabile: React.FC<{
+export const Smontabile: React.FC<{
   img: HTMLImageElement;
   altezza: number;
   cols: number;
