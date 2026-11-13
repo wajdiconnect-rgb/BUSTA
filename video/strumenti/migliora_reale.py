@@ -29,6 +29,7 @@ a.add_argument("inizio", type=float)
 a.add_argument("durata", type=float)
 a.add_argument("--taglia", default="")
 a.add_argument("--orizzontale", action="store_true")
+a.add_argument("--4k", dest="k4", action="store_true", help="uscita 2160x3840")
 p = a.parse_args()
 
 tmp = p.out + "_fotogrammi"
@@ -41,7 +42,7 @@ if p.taglia:
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(p.inizio), "-t", str(p.durata), "-i", p.src, "-vf", vf, os.path.join(tmp, "%04d.png")], check=True)
 
 m = modello()
-W, H = 1080, 1920
+W, H = (2160, 3840) if p.k4 else (1080, 1920)
 files = sorted(os.listdir(tmp))
 for k, f in enumerate(files):
     path = os.path.join(tmp, f)
