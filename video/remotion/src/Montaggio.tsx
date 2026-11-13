@@ -60,7 +60,7 @@ export const Montaggio: React.FC<MontaggioProps> = (p) => {
 
       {/* sottotitoli parola per parola */}
       {frase ? (
-        <div style={{position: 'absolute', left: 70, right: 70, top: 1390, textAlign: 'center', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 66, lineHeight: 1.18, color: '#fff', textShadow: '0 4px 18px rgba(0,0,0,0.85)'}}>
+        <div style={{position: 'absolute', left: 70, right: 70, top: 1580, textAlign: 'center', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 66, lineHeight: 1.18, color: '#fff', textShadow: '0 4px 18px rgba(0,0,0,0.85)'}}>
           {frase.parole.map((w, i) => {
             const on = t >= w.inizio - 0.05;
             const a = interpolate(t, [w.inizio - 0.05, w.inizio + 0.12], [0, 1], clamp);
