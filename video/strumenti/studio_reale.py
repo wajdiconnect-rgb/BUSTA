@@ -28,6 +28,7 @@ a.add_argument("--base", default="")
 a.add_argument("--scala", type=float, default=0.9)
 a.add_argument("--alza", type=int, default=0, help="sposta il prodotto in su (px)")
 a.add_argument("--larghezza", type=float, default=0, help="se >0: il prodotto occupa questa frazione della larghezza (es. 0.8)")
+a.add_argument("--convesso", action="store_true", help="oggetti tondi/convessi (sfere): forma piena e pulita, niente pezzi staccati")
 a.add_argument("--rettangolo", action="store_true", help="schermo piatto: maschera geometrica pulita a 4 lati")
 p = a.parse_args()
 
@@ -64,6 +65,23 @@ if p.base:
         base = np.isin(lab, tieni).astype(np.float32)
     base = cv2.GaussianBlur(base, (0, 0), 1.5)
     masks = [np.maximum(m, base) for m in masks]
+
+# 2a) oggetti convessi: per ogni pezzo grande, l'inviluppo convesso pieno
+if p.convesso:
+    nuove = []
+    for m in masks:
+        b = (m > 0.5).astype(np.uint8)
+        n, lab, st, _ = cv2.connectedComponentsWithStats(b)
+        q = np.zeros_like(m)
+        if n > 1:
+            aree = st[1:, cv2.CC_STAT_AREA]
+            for i, ar in enumerate(aree):
+                if ar >= 0.15 * aree.max():
+                    cnts, _ = cv2.findContours((lab == i + 1).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+                    cv2.fillPoly(q, [cv2.convexHull(max(cnts, key=cv2.contourArea))], 1.0)
+        q = cv2.GaussianBlur(cv2.erode(q, np.ones((5, 5), np.uint8)), (0, 0), 1.5)
+        nuove.append(q)
+    masks = nuove
 
 # 2b) schermo piatto: un quadrilatero pulito, fermo (camera ferma)
 if p.rettangolo:
