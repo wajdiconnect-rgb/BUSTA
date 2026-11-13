@@ -15,7 +15,8 @@ export type MontaggioProps = {
   durata: number;
   invito?: string;
   /** titoli grandi a tempo di musica (stile Reel di montaggio), al posto dei sottotitoli */
-  titoli?: {inizio: number; fine: number; testo: string}[]; // es. "Preventivo gratuito · link in bio"
+  titoli?: {inizio: number; fine: number; testo: string}[];
+  stileTitoli?: 'grande' | 'elegante'; // es. "Preventivo gratuito · link in bio"
 };
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -80,6 +81,18 @@ export const Montaggio: React.FC<MontaggioProps> = (p) => {
         if (t < ti.inizio || t > ti.fine) return null;
         const a = interpolate(t, [ti.inizio, ti.inizio + 0.12], [0, 1], clamp);
         const out = interpolate(t, [ti.fine - 0.12, ti.fine], [1, 0], clamp);
+        if (p.stileTitoli === 'elegante') {
+          const lin = interpolate(t, [ti.inizio, ti.inizio + 0.45], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+          const txt = interpolate(t, [ti.inizio + 0.12, ti.inizio + 0.6], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+          return (
+            <div key={i} style={{position: 'absolute', left: 60, right: 60, top: 1520, textAlign: 'center', opacity: out}}>
+              <div style={{height: 3, width: 120 * lin, background: '#D4A64A', margin: '0 auto 30px'}} />
+              <div style={{fontFamily: 'Montserrat, sans-serif', fontWeight: 600, fontSize: 50, letterSpacing: 14, lineHeight: 1.35, color: '#fff', textShadow: '0 3px 16px rgba(0,0,0,0.8)', opacity: txt, transform: `translateY(${(1 - txt) * 22}px)`}}>
+                {ti.testo}
+              </div>
+            </div>
+          );
+        }
         return (
           <div key={i} style={{position: 'absolute', left: 40, right: 40, top: 250, textAlign: 'center', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 150, letterSpacing: 6, lineHeight: 1.0, color: '#fff', textShadow: '0 8px 40px rgba(0,0,0,0.75)', opacity: a * out, transform: `scale(${1.25 - 0.25 * a})`}}>
             {ti.testo}
