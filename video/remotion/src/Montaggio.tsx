@@ -74,10 +74,10 @@ export const Montaggio: React.FC<MontaggioProps> = (p) => {
       ) : null}
 
       {/* finale */}
-      <AbsoluteFill style={{backdropFilter: `blur(${18 * fin}px)`, background: `rgba(10,8,6,${0.55 * fin})`}} />
+      <AbsoluteFill style={{opacity: fin, background: 'radial-gradient(ellipse 80% 55% at 50% 45%, #f7f3ee 0%, #e9e3da 60%, #d6cfc4 100%)'}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: logoIn, transform: `scale(${0.9 + 0.1 * logoIn})`}}>
         <Img src={staticFile(p.logo)} style={{width: 720}} />
-        <div style={{marginTop: 40, fontFamily: 'Montserrat, sans-serif', fontWeight: 600, fontSize: 40, letterSpacing: 10, color: '#fff'}}>LEDINFINITY.EU</div>
+        <div style={{marginTop: 40, fontFamily: 'Montserrat, sans-serif', fontWeight: 600, fontSize: 40, letterSpacing: 10, color: '#171310'}}>LEDINFINITY.EU</div>
         {p.invito ? (
           <div style={{marginTop: 60, padding: '22px 46px', borderRadius: 60, background: '#F2C14E', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 40, color: '#171310'}}>{p.invito}</div>
         ) : null}
