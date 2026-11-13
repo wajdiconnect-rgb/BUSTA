@@ -56,11 +56,11 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
   const rotY = p.moduli ? Math.sin(t * 0.55) * 26 * THREE_clamp((t - 1.5) / 2) : giro + dondolo;
   const galleggia = Math.sin(t * 1.4) * 14;
   // smontaggio: 0..1
-  const s = t - T_SMONTA;
+  const s = t - (p.moduli ? 5.2 : T_SMONTA); // con i moduli si parte prima, per farli vedere piano piano
   const espl = s < 0 ? 0 : s < 0.55 ? ease(s / 0.55) : s < 1.3 ? 1 : s < 2.2 ? 1 - ease((s - 1.3) / 0.9) : 0;
   const inPezzi = !p.moduli && s > 0 && s < 2.2;
-  const inModuli = !!p.moduli && s > 0 && s < 3.0;
-  const lampo = Math.exp(-Math.abs(s - (p.moduli ? 2.75 : 2.2)) * 8) * 0.55;
+  const inModuli = !!p.moduli && s > 0 && s < 4.3;
+  const lampo = Math.exp(-Math.abs(s - (p.moduli ? 4.05 : 2.2)) * 8) * 0.55;
   // finale: il prodotto sale e rimpicciolisce un po', compaiono nome e logo
   const fin = ease(THREE_clamp((t - tFinale) / 1.0));
   const scala = (1 + 0.06 * Math.sin(t * 0.6)) * (1 - 0.22 * fin);
@@ -84,8 +84,8 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
     for (let r = 0; r < R; r++)
       for (let c = 0; c < C; c++) {
         const i = r * C + c;
-        const d = (c + r) * 0.08; // onda diagonale
-        const fuori = ease(THREE_clamp((s - d) / 0.5)) * (1 - ease(THREE_clamp((s - 1.7 - d) / 0.55)));
+        const d = (c + r) * 0.13; // onda diagonale, lenta
+        const fuori = ease(THREE_clamp((s - d) / 0.9)) * (1 - ease(THREE_clamp((s - 2.4 - d) / 0.9)));
         const mw = bw / C, mh = bh / R;
         const mx = bx + c * mw, my = by + r * mh;
         const dx = mx + mw / 2 - (bx + bw / 2), dy = my + mh / 2 - (by + bh / 2);
@@ -156,7 +156,7 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
         </AbsoluteFill>
       </AbsoluteFill>
       {/* leggero velo chiaro dietro al prodotto, per farlo risaltare (non scuro) */}
-      <AbsoluteFill style={{background: 'radial-gradient(ellipse 70% 45% at 50% 45%, rgba(255,250,240,0.55) 0%, rgba(255,250,240,0) 75%)'}} />
+      <AbsoluteFill style={{background: 'radial-gradient(ellipse 70% 45% at 50% 45%, rgba(255,250,240,0.22) 0%, rgba(255,250,240,0) 70%)'}} />
 
       {/* ombra morbida sotto il prodotto */}
       <div
