@@ -1,5 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Easing, Img, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Tondo3D} from './Tondo3D';
 import '@fontsource/montserrat/600.css';
 import '@fontsource/montserrat/800.css';
 
@@ -41,7 +42,7 @@ const T_FINALE_D = 3.4; // gli ultimi secondi: nome e logo
 
 export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
   const frame = useCurrentFrame();
-  const {fps, durationInFrames} = useVideoConfig();
+  const {fps, durationInFrames, width, height} = useVideoConfig();
   const t = frame / fps;
   const W = p.tondo ? p.tondo.raggio * 2 : p.larghezza;
   const H = p.tondo ? p.tondo.altezza + p.tondo.raggio * 0.6 : W / p.aspetto;
@@ -175,7 +176,7 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
         }}
       />
 
-      {p.tondo ? <Tondo q={p.tondo} t={t} s={s} cy={860 + galleggia + sali + (1 - entra) * -1500} scala={scala} /> : null}
+      {p.tondo ? <Tondo3D q={p.tondo} t={t} s={s} cy={860 + galleggia + sali + (1 - entra) * -1500} scala={scala} width={width} height={height} /> : null}
       {/* il prodotto in 3D */}
       {p.tondo ? null : (
       <div style={{position: 'absolute', left: cx, top: cy, width: W, height: H, perspective: 2200}}>
