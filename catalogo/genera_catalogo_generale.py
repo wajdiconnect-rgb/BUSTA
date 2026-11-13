@@ -141,7 +141,7 @@ F_ROWS = [
     ("Collegamenti", "Sorgenti", "Composito, S-Video, Component, HDMI, SDI, VGA, DVI"),
     ("Struttura", "Materiale", "Acciaio verniciato nero"),
     ("Struttura", "Installazione", "A terra (standard) · sovrapposto, appeso o a parete (opzionale)"),
-    ("Struttura", "Certificazioni", "MET, FCC, CCC, RoHS, CE"),
+    ("Struttura", "Certificazioni", "CE, RoHS, FCC, MET"),
 ]
 F_MISURE = [("1920 × 960", "1065 × 585 × 1100", "97 kg"), ("2240 × 960", "1360 × 585 × 1100", "115 kg"),
             ("2560 × 960", "1675 × 585 × 1100", "130 kg"), ("2880 × 960", "1995 × 585 × 1100", "145 kg"),
