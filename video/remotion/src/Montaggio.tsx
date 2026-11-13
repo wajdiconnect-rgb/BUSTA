@@ -2,6 +2,7 @@ import React from 'react';
 import {AbsoluteFill, Easing, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import '@fontsource/montserrat/600.css';
 import '@fontsource/montserrat/800.css';
+import '@fontsource/jetbrains-mono/600.css';
 
 /**
  * Montaggio — Reel con riprese VERE: i pezzi uno dopo l'altro (leggero zoom, stacchi puliti),
@@ -16,7 +17,7 @@ export type MontaggioProps = {
   invito?: string;
   /** titoli grandi a tempo di musica (stile Reel di montaggio), al posto dei sottotitoli */
   titoli?: {inizio: number; fine: number; testo: string}[];
-  stileTitoli?: 'grande' | 'elegante'; // es. "Preventivo gratuito · link in bio"
+  stileTitoli?: 'grande' | 'elegante' | 'tecno'; // es. "Preventivo gratuito · link in bio"
 };
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -81,6 +82,32 @@ export const Montaggio: React.FC<MontaggioProps> = (p) => {
         if (t < ti.inizio || t > ti.fine) return null;
         const a = interpolate(t, [ti.inizio, ti.inizio + 0.12], [0, 1], clamp);
         const out = interpolate(t, [ti.fine - 0.12, ti.fine], [1, 0], clamp);
+        if (p.stileTitoli === 'tecno') {
+          // scritta tecnologica: le lettere si "decodificano" una dopo l'altra, con cursore lampeggiante
+          const PASSO = 0.045;
+          const segni = '01<>/#+=*ABCDEFGHKLMNPRSTUVXZ';
+          const lettere = ti.testo.split('').map((ch, j) => {
+            const tj = ti.inizio + 0.1 + j * PASSO;
+            if (ch === ' ') return t >= tj ? ' ' : '';
+            if (t < tj) return '';
+            if (t < tj + 0.09) return segni[(j * 7 + Math.floor(t * 30)) % segni.length];
+            return ch;
+          });
+          const scritte = lettere.join('');
+          const finito = t >= ti.inizio + 0.1 + ti.testo.length * PASSO + 0.09;
+          const cursore = !finito || Math.floor(t * 2.5) % 2 === 0;
+          const lin = interpolate(t, [ti.inizio, ti.inizio + 0.35], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+          return (
+            <div key={i} style={{position: 'absolute', left: 60, right: 60, top: 1520, textAlign: 'center', opacity: out}}>
+              <div style={{height: 3, width: 120 * lin, background: '#D4A64A', margin: '0 auto 30px', boxShadow: '0 0 12px rgba(212,166,74,0.8)'}} />
+              <div style={{fontFamily: '"JetBrains Mono", monospace', fontWeight: 600, fontSize: 50, letterSpacing: 6, color: '#fff', textShadow: '0 0 14px rgba(120,200,255,0.35), 0 3px 16px rgba(0,0,0,0.85)', whiteSpace: 'pre'}}>
+                {scritte}
+                <span style={{color: '#D4A64A', opacity: cursore ? 1 : 0}}>▍</span>
+                <span style={{opacity: 0}}>{ti.testo.slice(scritte.length)}</span>
+              </div>
+            </div>
+          );
+        }
         if (p.stileTitoli === 'elegante') {
           const lin = interpolate(t, [ti.inizio, ti.inizio + 0.45], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
           const txt = interpolate(t, [ti.inizio + 0.12, ti.inizio + 0.6], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
