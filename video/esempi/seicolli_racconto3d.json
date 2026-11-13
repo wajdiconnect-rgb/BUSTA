@@ -1,0 +1,17 @@
+{
+ "sfondo": "sito.mp4",
+ "sovrapposizione": 0.6,
+ "oro": "#C9A55C",
+ "scene": [
+  {"img": "prosciutto2.png", "video": "ham3d.mp4", "pieno": true, "larghezza": 1080, "x": 0, "y": 0,
+   "etichetta": "Prosciutto di Parma", "titolo": "Stagionato con pazienza", "testo": "alto", "durata": 6.0},
+  {"img": "prosciutto2.png", "video": "chef3d.mp4", "pieno": true, "larghezza": 1080, "x": 0, "y": 0,
+   "etichetta": "L'arte del taglio", "titolo": "A mano, fetta dopo fetta", "testo": "basso", "durata": 6.0},
+  {"img": "prosciutto2.png", "giro3d": true, "larghezza": 860, "x": 110, "y": 420,
+   "etichetta": "Dal nostro allevamento", "titolo": "Alla tua tavola", "entrata": "alto", "testo": "alto", "durata": 5.4}
+ ],
+ "finale": {"logo": "logo.png", "riga1": "Salumi", "riga2": "Seicolli",
+  "motto": "La tradizione che si rinnova a ogni taglio", "sito": "salumiseicolli.it",
+  "slogan": "Non siamo migliori, ma siamo diversi.", "durata": 11.0},
+ "effetti": {"polvere": true, "bokeh": true, "luci": true, "grana": true, "vignetta": true}
+}

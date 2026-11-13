@@ -1,0 +1,53 @@
+{
+ "oro": "#C9A55C",
+ "logo": "logo.png",
+ "marchio": "Salumi Seicolli",
+ "scorrimento": 0.8,
+ "pagine": [
+  {
+   "etichetta": "Prosciutto di Parma",
+   "titolo": "Dal nostro\nallevamento",
+   "testo": "alla tua tavola, con la pazienza di sempre.",
+   "pulsante": "Scopri la nostra storia",
+   "media": "prosciutto_rotante.webm",
+   "tipo": "esce",
+   "durata": 5.0,
+   "larghezzaMedia": 800,
+   "topMedia": 780
+  },
+  {
+   "etichetta": "L'arte del taglio",
+   "titolo": "Fetta\ndopo fetta",
+   "testo": "Tagliato a mano, sottile come seta.",
+   "pulsante": "I nostri salumi",
+   "media": "chef_ai.mp4",
+   "tipo": "scheda",
+   "durata": 3.0
+  },
+  {
+   "etichetta": "Coppa stagionata",
+   "titolo": "Sottile\ncome seta",
+   "testo": "Ogni fetta racconta la nostra tradizione.",
+   "pulsante": "Tutti i prodotti",
+   "media": "coppa_ai.mp4",
+   "tipo": "scheda",
+   "durata": 4.2
+  },
+  {
+   "etichetta": "Il gusto vero",
+   "titolo": "Alla tua\ntavola",
+   "testo": "Semplice. Autentico. Italiano.",
+   "pulsante": "Dove trovarci",
+   "media": "panino.webm",
+   "tipo": "esce",
+   "durata": 6.0
+  }
+ ],
+ "finale": {
+  "titolo": "La tradizione che si rinnova a ogni taglio",
+  "slogan": "Non siamo migliori, ma siamo diversi.",
+  "pulsante": "Scopri i prodotti",
+  "sito": "salumiseicolli.it",
+  "durata": 7.0
+ }
+}
