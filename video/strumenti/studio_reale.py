@@ -28,6 +28,7 @@ a.add_argument("--base", default="")
 a.add_argument("--scala", type=float, default=0.9)
 a.add_argument("--alza", type=int, default=0, help="sposta il prodotto in su (px)")
 a.add_argument("--larghezza", type=float, default=0, help="se >0: il prodotto occupa questa frazione della larghezza (es. 0.8)")
+a.add_argument("--sfere", type=int, default=0, help="numero di sfere: ritaglio a cerchio perfetto, fermo e pulito")
 a.add_argument("--convesso", action="store_true", help="oggetti tondi/convessi (sfere): forma piena e pulita, niente pezzi staccati")
 a.add_argument("--rettangolo", action="store_true", help="schermo piatto: maschera geometrica pulita a 4 lati")
 p = a.parse_args()
@@ -65,6 +66,36 @@ if p.base:
         base = np.isin(lab, tieni).astype(np.float32)
     base = cv2.GaussianBlur(base, (0, 0), 1.5)
     masks = [np.maximum(m, base) for m in masks]
+
+# 2s) sfere: cerchi perfetti (cerchio inscritto più grande, stabilizzato nel tempo)
+if p.sfere:
+    cerchi = []
+    for m in masks:
+        b = (m > 0.5).astype(np.uint8)
+        dt = cv2.distanceTransform(b, cv2.DIST_L2, 5)
+        cc = []
+        for _ in range(p.sfere):
+            _, r, _, (x, y) = cv2.minMaxLoc(dt)
+            if cc and r < 0.45 * cc[0][2]:
+                break
+            cc.append((x, y, r))
+            cv2.circle(dt, (int(x), int(y)), int(r * 1.6), 0, -1)
+        cerchi.append(sorted(cc))
+    nmax = max(len(c) for c in cerchi)
+    arr = np.full((len(cerchi), nmax, 3), np.nan)
+    for k, c in enumerate(cerchi):
+        for j, v in enumerate(c):
+            arr[k, j] = v
+    nuove = []
+    for k in range(len(cerchi)):
+        win = arr[max(0, k - 3):k + 4]
+        q = np.zeros_like(masks[0])
+        for j in range(nmax):
+            v = np.nanmedian(win[:, j], 0)
+            if not np.isnan(v).any():
+                cv2.circle(q, (int(round(v[0])), int(round(v[1]))), int(round(v[2] * 1.03)), 1.0, -1, lineType=cv2.LINE_AA)
+        nuove.append(cv2.GaussianBlur(q, (0, 0), 1.2))
+    masks = nuove
 
 # 2a) oggetti convessi: per ogni pezzo grande, l'inviluppo convesso pieno
 if p.convesso:
