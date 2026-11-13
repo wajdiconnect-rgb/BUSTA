@@ -18,10 +18,10 @@ export type MontaggioProps = {
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
-const Pezzo: React.FC<{src: string; durata: number; fps: number}> = ({src, durata, fps}) => {
+const Pezzo: React.FC<{src: string; durata: number; fps: number; primo?: boolean}> = ({src, durata, fps, primo}) => {
   const f = useCurrentFrame();
   const z = interpolate(f, [0, durata * fps], [1.0, 1.07], clamp);
-  const entra = interpolate(f, [0, 5], [0, 1], clamp);
+  const entra = primo ? 1 : interpolate(f, [0, 5], [0, 1], clamp);
   return (
     <AbsoluteFill style={{opacity: entra}}>
       <OffthreadVideo src={staticFile(src)} muted style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${z})`}} />
@@ -42,7 +42,7 @@ export const Montaggio: React.FC<MontaggioProps> = (p) => {
     const len = i === p.pezzi.length - 1 ? durationInFrames - from : Math.round(c.durata * fps) + 3;
     return (
       <Sequence key={i} from={from} durationInFrames={len}>
-        <Pezzo src={c.src} durata={len / fps} fps={fps} />
+        <Pezzo src={c.src} durata={len / fps} fps={fps} primo={i === 0} />
       </Sequence>
     );
   });
