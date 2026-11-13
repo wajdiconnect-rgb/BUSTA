@@ -76,7 +76,7 @@ if p.sfere:
         cc = []
         for _ in range(p.sfere):
             _, r, _, (x, y) = cv2.minMaxLoc(dt)
-            if cc and r < 0.45 * cc[0][2]:
+            if cc and r < 0.6 * cc[0][2]:
                 break
             cc.append((x, y, r))
             cv2.circle(dt, (int(x), int(y)), int(r * 1.6), 0, -1)
@@ -180,7 +180,13 @@ grana = rng.normal(0, 1.2, (H, W, 1)).astype(np.float32)
 # trasformazione: il prodotto scalato e appoggiato sulla linea del pavimento
 M = np.float32([[s, 0, W / 2 - cx * s], [0, s, nuovo_fondo - fondo_y * s - p.alza]])
 
+# con le sfere ogni fotogramma resta appoggiato al pavimento (anche se la camera si avvicina)
+fondi = np.array(bottoms, np.float32)
+if p.sfere:
+    fondi = np.array([np.median(fondi[max(0, k - 4):k + 5]) for k in range(len(fondi))], np.float32)
 for k, (fr, m) in enumerate(zip(frames, masks)):
+    if p.sfere:
+        M = np.float32([[s, 0, W / 2 - cx * s], [0, s, nuovo_fondo - fondi[k] * s - p.alza]])
     prod = cv2.warpAffine(fr.astype(np.float32), M, (W, H), flags=cv2.INTER_LANCZOS4)
     mk = cv2.warpAffine(m, M, (W, H), flags=cv2.INTER_LINEAR)[..., None]
     img = fondale.copy()
