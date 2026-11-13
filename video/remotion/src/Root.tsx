@@ -10,6 +10,7 @@ import {Parata3D, Parata3DProps} from './Parata3D';
 import {Discesa3D, Discesa3DProps} from './Discesa3D';
 import {SitoTocco, SitoToccoProps, durataSitoTocco} from './SitoTocco';
 import {ProdottoSingolo, ProdottoSingoloProps} from './ProdottoSingolo';
+import {Montaggio, MontaggioProps} from './Montaggio';
 
 const FPS = 30;
 
@@ -68,8 +69,20 @@ const toccoDefault: SitoToccoProps = {alto: [], sfondoBanda: '#efe6d6', bandaY: 
 
 const singoloDefault: ProdottoSingoloProps = {sfondo: 'sito.mp4', fronte: 'f.png', retro: 'r.png', aspetto: 1, larghezza: 860, nome: 'Prodotto', logo: 'logo.png', oro: '#D4A64A', durata: 14};
 
+const montaggioDefault: MontaggioProps = {pezzi: [], frasi: [], logo: 'logo.png', finale: 24, durata: 28};
+
 export const RemotionRoot: React.FC = () => (
   <>
+  <Composition
+    id="Montaggio"
+    component={Montaggio}
+    width={1080}
+    height={1920}
+    fps={FPS}
+    durationInFrames={840}
+    defaultProps={montaggioDefault}
+    calculateMetadata={({props}) => ({durationInFrames: Math.round(props.durata * FPS)})}
+  />
   <Composition
     id="ProdottoSingolo"
     component={ProdottoSingolo}
