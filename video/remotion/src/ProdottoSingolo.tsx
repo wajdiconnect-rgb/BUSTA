@@ -23,6 +23,8 @@ export type ProdottoSingoloProps = {
   griglia?: number; // pezzi per lato nello smontaggio (default 6)
   /** smontaggio REALE: i moduli dello schermo escono in avanti dal cabinet e rientrano */
   moduli?: {cols: number; rows: number; vuoto: string};
+  /** prodotto ROTONDO vero (cilindro di moduli), che gira e si smonta tutto intorno */
+  tondo?: {panorama: string; retro: string; colonne: number; righe: number; raggio: number; altezza: number};
 };
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -41,12 +43,12 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
   const t = frame / fps;
-  const W = p.larghezza;
-  const H = W / p.aspetto;
+  const W = p.tondo ? p.tondo.raggio * 2 : p.larghezza;
+  const H = p.tondo ? p.tondo.altezza + p.tondo.raggio * 0.6 : W / p.aspetto;
   const tFinale = p.durata - T_FINALE_D;
 
   // entrata dall'alto con molla
-  const entra = p.moduli
+  const entra = p.moduli || p.tondo
     ? ease(THREE_clamp((t - 0.2) / 2.4))
     : spring({frame: frame - 0.3 * fps, fps, config: {damping: 16, mass: 1.4, stiffness: 70}});
   // giro completo a 360°
@@ -56,11 +58,11 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
   const rotY = p.moduli ? Math.sin(t * 0.55) * 26 * THREE_clamp((t - 1.5) / 2) : giro + dondolo;
   const galleggia = Math.sin(t * 1.4) * 14;
   // smontaggio: 0..1
-  const s = t - (p.moduli ? 5.2 : T_SMONTA); // con i moduli si parte prima, per farli vedere piano piano
+  const s = t - (p.moduli || p.tondo ? 5.2 : T_SMONTA); // con i moduli si parte prima, per farli vedere piano piano
   const espl = s < 0 ? 0 : s < 0.55 ? ease(s / 0.55) : s < 1.3 ? 1 : s < 2.2 ? 1 - ease((s - 1.3) / 0.9) : 0;
   const inPezzi = !p.moduli && s > 0 && s < 2.2;
   const inModuli = !!p.moduli && s > 0 && s < 4.3;
-  const lampo = Math.exp(-Math.abs(s - (p.moduli ? 4.05 : 2.2)) * 8) * 0.55;
+  const lampo = Math.exp(-Math.abs(s - (p.moduli || p.tondo ? 4.05 : 2.2)) * 8) * 0.55;
   // finale: il prodotto sale e rimpicciolisce un po', compaiono nome e logo
   const fin = ease(THREE_clamp((t - tFinale) / 1.0));
   const scala = (1 + 0.06 * Math.sin(t * 0.6)) * (1 - 0.22 * fin);
@@ -173,7 +175,9 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
         }}
       />
 
+      {p.tondo ? <Tondo q={p.tondo} t={t} s={s} cy={860 + galleggia + sali + (1 - entra) * -1500} scala={scala} /> : null}
       {/* il prodotto in 3D */}
+      {p.tondo ? null : (
       <div style={{position: 'absolute', left: cx, top: cy, width: W, height: H, perspective: 2200}}>
         <div style={{position: 'relative', width: W, height: H, transformStyle: 'preserve-3d', transform: `scale(${scala}) rotateY(${rotY}deg)`}}>
           {inPezzi ? (
@@ -254,6 +258,7 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
         </div>
       </div>
 
+      )}
       {/* nome e logo nel finale */}
       <div style={{position: 'absolute', left: 0, right: 0, top: 1330, textAlign: 'center', opacity: nomeIn, transform: `translateY(${(1 - nomeIn) * 30}px)`}}>
         <div style={{height: 3, width: 160 * nomeIn, background: p.oro, margin: '0 auto 26px'}} />
@@ -274,3 +279,91 @@ export const ProdottoSingolo: React.FC<ProdottoSingoloProps> = (p) => {
 function THREE_clamp(x: number) {
   return Math.max(0, Math.min(1, x));
 }
+
+/** cilindro di moduli LED: fuori la frutta, dentro il retro dei cabinet; si smonta tutto intorno */
+const Tondo: React.FC<{q: NonNullable<ProdottoSingoloProps['tondo']>; t: number; s: number; cy: number; scala: number}> = ({q, t, s, cy, scala}) => {
+  const N = q.colonne;
+  const R = q.raggio;
+  const w = 2 * R * Math.tan(Math.PI / N) + 1.5;
+  const h = q.altezza / q.righe;
+  const giro = t * 24; // gira piano su se stesso, 360° vero
+  const scorri = t * 40; // il contenuto dello schermo scorre intorno
+  const pano = N * (w - 1.5);
+  const els: React.ReactNode[] = [];
+  for (let i = 0; i < N; i++) {
+    for (let r = 0; r < q.righe; r++) {
+      const d = (i / N) * 1.3 + r * 0.18; // onda che gira intorno
+      const fuori = s > 0 ? ease(THREE_clamp((s - d) / 0.9)) * (1 - ease(THREE_clamp((s - 2.4 - d) / 0.9))) : 0;
+      const dy = (r - (q.righe - 1) / 2) * 70 * fuori;
+      els.push(
+        <div
+          key={i + '_' + r}
+          style={{
+            position: 'absolute',
+            left: -w / 2,
+            top: -q.altezza / 2 + r * h,
+            width: w,
+            height: h,
+            transformStyle: 'preserve-3d',
+            transform: `rotateY(${(i * 360) / N}deg) translateY(${dy}px) translateZ(${R + 230 * fuori}px) rotateX(${(r - (q.righe - 1) / 2) * -10 * fuori}deg)`,
+          }}
+        >
+          {/* spessore del modulo */}
+          {[2, 4, 6].map((z) => (
+            <div key={z} style={{position: 'absolute', inset: 0, background: '#1d1e22', transform: `translateZ(${-z}px)`}} />
+          ))}
+          {/* fuori: lo schermo */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backfaceVisibility: 'hidden',
+              backgroundImage: `url(${staticFile(q.panorama)})`,
+              backgroundSize: `${pano}px ${q.altezza}px`,
+              backgroundPosition: `${-((i * (w - 1.5) + scorri) % pano)}px ${-r * h}px`,
+              boxShadow: `inset 0 0 0 ${1 + 2 * fuori}px rgba(15,15,18,0.85)`,
+            }}
+          />
+          {/* dentro: il retro del cabinet */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(-8px) rotateY(180deg)',
+              backgroundImage: `url(${staticFile(q.retro)})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'brightness(0.8)',
+              boxShadow: 'inset 0 0 0 2px #111',
+            }}
+          />
+        </div>,
+      );
+    }
+  }
+  // anelli di struttura sopra e sotto (restano fermi mentre i moduli escono)
+  for (let i = 0; i < N; i++) {
+    for (const y of [-q.altezza / 2 - 10, q.altezza / 2]) {
+      els.push(
+        <div
+          key={'a' + i + '_' + y}
+          style={{
+            position: 'absolute',
+            left: -w / 2,
+            top: y,
+            width: w,
+            height: 10,
+            background: 'linear-gradient(#5a5c62, #2a2b30)',
+            transform: `rotateY(${(i * 360) / N}deg) translateZ(${R - 12}px)`,
+          }}
+        />,
+      );
+    }
+  }
+  return (
+    <div style={{position: 'absolute', left: 540, top: cy, width: 0, height: 0, perspective: 2400, perspectiveOrigin: '0 -200px'}}>
+      <div style={{position: 'absolute', transformStyle: 'preserve-3d', transform: `scale(${scala}) rotateX(-16deg) rotateY(${giro}deg)`}}>{els}</div>
+    </div>
+  );
+};
