@@ -47,3 +47,12 @@ Prima del 4K fare sempre stills a `--scale=0.25` e un foglio di controllo; nei r
 - taglio: "the chef slowly slices the ham with a long knife, a paper-thin translucent slice peels off and gently falls down"
 - panino: "the bread roll slowly splits open into two halves, the top half lifts up" (azioni multiple → risultati confusi)
 Volti di persone reali possono cambiare: usare i primi 2-3 secondi o inquadrare le mani.
+
+## Regole del cliente Ledinfinity (sempre)
+- Lo slogan si dice **sempre in inglese**: "Ledinfinity. The future is now." — anche nei video in italiano (voce inglese solo per questa frase).
+- Ledinfinity **vende** (niente noleggio) e **spedisce in tutto il mondo**.
+- Nessuna faccia di operai/persone nei video: zoom stretto su prodotto e mani, non sfocare.
+- Niente loghi di altre marche (Samsung, Hisense, JD, ecc.): tagliare l'inquadratura.
+- Ogni video una voce diversa (uomo/donna, lingua secondo il video). Messaggi all'utente: brevi e in italiano.
+- Testi parlati generali e belli (es. "ogni tipo di negozio"), non elenchi di categorie.
+- Scritte preferite: stile "tecno" (lettere che si scrivono una dopo l'altra, cursore dorato).
