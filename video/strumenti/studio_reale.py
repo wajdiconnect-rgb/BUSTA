@@ -27,6 +27,8 @@ a.add_argument("out")
 a.add_argument("--base", default="")
 a.add_argument("--scala", type=float, default=0.9)
 a.add_argument("--alza", type=int, default=0, help="sposta il prodotto in su (px)")
+a.add_argument("--larghezza", type=float, default=0, help="se >0: il prodotto occupa questa frazione della larghezza (es. 0.8)")
+a.add_argument("--rettangolo", action="store_true", help="schermo piatto: maschera geometrica pulita a 4 lati")
 p = a.parse_args()
 
 W, H = 1080, 1920
@@ -63,6 +65,22 @@ if p.base:
     base = cv2.GaussianBlur(base, (0, 0), 1.5)
     masks = [np.maximum(m, base) for m in masks]
 
+# 2b) schermo piatto: un quadrilatero pulito, fermo (camera ferma)
+if p.rettangolo:
+    med = np.median(np.stack(masks[:: max(1, len(masks) // 15)]), 0)
+    cnts, _ = cv2.findContours((med > 0.5).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    c = max(cnts, key=cv2.contourArea)
+    hull = cv2.convexHull(c)
+    eps = 0.01 * cv2.arcLength(hull, True)
+    poly = cv2.approxPolyDP(hull, eps, True)
+    while len(poly) > 4:
+        eps *= 1.2
+        poly = cv2.approxPolyDP(hull, eps, True)
+    q = np.zeros_like(med, np.float32)
+    cv2.fillPoly(q, [poly], 1.0)
+    q = cv2.GaussianBlur(cv2.erode(q, np.ones((5, 5), np.uint8)), (0, 0), 1.2)
+    masks = [q.copy() for _ in masks]
+
 # 3) maschere più stabili nel tempo (niente tremolii sui bordi)
 sm = []
 for k in range(len(masks)):
@@ -89,6 +107,12 @@ larg = int(np.median(rights) - np.median(lefts)) if lefts else W // 2
 
 # 4) fondale da studio fotografico (chiaro, caldo, morbido)
 s = p.scala
+if p.larghezza > 0 and larg > 0:
+    s = p.larghezza * W / larg
+tops = [np.where(m.max(1) > 0.5)[0].min() for m in masks if (m > 0.5).any()]
+alt = fondo_y - (np.percentile(tops, 5) if tops else 0)
+if alt > 0:
+    s = min(s, (int(H * 0.70) - 170) / alt)  # mai tagliato in alto
 nuovo_fondo = int(H * 0.70)  # dove appoggia il prodotto nel video finale
 yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
 alto = np.array([214, 208, 200], np.float32)
