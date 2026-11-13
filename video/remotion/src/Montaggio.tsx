@@ -13,7 +13,9 @@ export type MontaggioProps = {
   logo: string;
   finale: number; // secondo in cui parte il finale con il logo
   durata: number;
-  invito?: string; // es. "Preventivo gratuito · link in bio"
+  invito?: string;
+  /** titoli grandi a tempo di musica (stile Reel di montaggio), al posto dei sottotitoli */
+  titoli?: {inizio: number; fine: number; testo: string}[]; // es. "Preventivo gratuito · link in bio"
 };
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -72,6 +74,18 @@ export const Montaggio: React.FC<MontaggioProps> = (p) => {
           })}
         </div>
       ) : null}
+
+      {/* titoli grandi, entrano con un colpo */}
+      {(p.titoli ?? []).map((ti, i) => {
+        if (t < ti.inizio || t > ti.fine) return null;
+        const a = interpolate(t, [ti.inizio, ti.inizio + 0.12], [0, 1], clamp);
+        const out = interpolate(t, [ti.fine - 0.12, ti.fine], [1, 0], clamp);
+        return (
+          <div key={i} style={{position: 'absolute', left: 40, right: 40, top: 250, textAlign: 'center', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 150, letterSpacing: 6, lineHeight: 1.0, color: '#fff', textShadow: '0 8px 40px rgba(0,0,0,0.75)', opacity: a * out, transform: `scale(${1.25 - 0.25 * a})`}}>
+            {ti.testo}
+          </div>
+        );
+      })}
 
       {/* finale */}
       <AbsoluteFill style={{opacity: fin, background: 'radial-gradient(ellipse 80% 55% at 50% 45%, #f7f3ee 0%, #e9e3da 60%, #d6cfc4 100%)'}} />
