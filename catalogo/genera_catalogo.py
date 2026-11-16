@@ -295,7 +295,7 @@ pagine.append('''<section class="pg dark back"><div class="ghost" style="left:50
 <div class="center"><img src="out/logo.png">
 <h2>Il tuo progetto<i>inizia da qui.</i></h2>
 <div class="contacts"><div><b>Email</b>info@ledinfinity.eu</div><div><b>WhatsApp</b>+39 366 310 0622</div><div><b>Instagram</b>@ledinfinity.ledwall</div><div><b>Sito</b>www.ledinfinity.eu</div></div>
-<p class="small">Preventivo gratuito e spedizione in tutto il mondo. I dati tecnici sono indicativi e possono cambiare senza preavviso: il nostro team ti aiuta a scegliere il passo, il formato e la configurazione giusti per il tuo spazio.</p></div>
+<p class="small">Spedizione in tutto il mondo. I dati tecnici sono indicativi e possono cambiare senza preavviso: il nostro team ti aiuta a scegliere il passo, il formato e la configurazione giusti per il tuo spazio.</p></div>
 <div class="foot"><span><b>LEDINFINITY</b> · The future is now.</span><span>ledinfinity.eu</span><span>08</span></div></section>''')
 
 doc = f'''<!doctype html><html lang="it"><head><meta charset="utf-8"><title>LEDINFINITY · Catalogo Stage · Stage II · Flex</title>

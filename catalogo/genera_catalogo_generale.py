@@ -136,6 +136,8 @@ F_ROWS = [
     ("Schermo", "Protezione IP", "IP43"),
     ("Schermo", "Alimentazione", "110–240 V AC, 50–60 Hz"),
     ("Schermo", "Temperatura di esercizio", "−20…+50 °C"),
+    ("Schermo", "Consumo (per bancone)", "150–170 W"),
+    ("Collegamenti", "Controller", "Novastar AD20 · Wi-Fi, chiavetta USB, HDMI · uscita audio per casse"),
     ("Collegamenti", "Video", "2 × HDMI (ingresso e uscita), 1 × USB 2.0"),
     ("Collegamenti", "Rete", "RJ45, Wi-Fi, rete locale AP, 4G (opzionale)"),
     ("Collegamenti", "Sorgenti", "Composito, S-Video, Component, HDMI, SDI, VGA, DVI"),
@@ -193,7 +195,7 @@ P.append('''<section class="pg dark cover cover2">
 </div>
 <div class="tit"><div class="eyebrow">Catalogo prodotti 2026</div>
 <h1>Schermi LED<br>professionali<i>per ogni spazio.</i></h1>
-<p class="sub">Facciate, negozi, uffici, eventi e palchi: sette linee Infinity, dal passo 0,9 al 10,4 mm. Preventivo gratuito e spedizione in tutto il mondo.</p></div>
+<p class="sub">Facciate, negozi, uffici, eventi e palchi: sette linee Infinity, dal passo 0,9 al 10,4 mm. Spedizione in tutto il mondo.</p></div>
 <div class="lines"><span>Grand</span><span>Pad</span><span>Totem</span><span>Front Desk</span><span>Stage</span><span>Stage II</span><span>Flex</span></div>
 <div class="foot"><span><b>LEDINFINITY</b> · The future is now.</span><span>ledinfinity.eu</span><span>01</span></div></section>''')
 
@@ -201,7 +203,7 @@ P.append('''<section class="pg dark cover cover2">
 P.append('''<section class="pg"><div class="ghost" style="left:-6mm;bottom:-16mm">LINEE</div>
 <div class="intro"><div class="eyebrow">Le linee Infinity</div><h2>Sette linee<em>un solo interlocutore.</em></h2>
 <p class="lead">Dalla facciata da 10.000 nit al bancone reception, dal totem in pieno sole al palco per i concerti. Ti aiutiamo a scegliere passo, formato e configurazione, e seguiamo il progetto fino all'installazione.</p>
-<ul class="adv"><li>Preventivo gratuito in un giorno lavorativo</li><li>Spedizione in tutto il mondo</li><li>Assistenza e ricambi</li></ul></div>
+<ul class="adv"><li>Risposta in un giorno lavorativo</li><li>Spedizione in tutto il mondo</li><li>Assistenza e ricambi</li></ul></div>
 <div class="toc">
 <div class="row"><div><b>Grand</b><i>facciate e grandi spazi</i></div><span>03</span></div>
 <div class="row"><div><b>Pad</b><i>pareti LED da interno</i></div><span>05</span></div>
