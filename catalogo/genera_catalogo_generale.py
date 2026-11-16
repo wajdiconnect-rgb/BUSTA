@@ -59,7 +59,8 @@ G_ROWS = [
     ("Cabinet", "Moduli per cabinet", "2 × 4"),
     ("Cabinet", "Peso cabinet", "22,5 kg"),
     ("Cabinet", "Materiale", "Alluminio"),
-    ("Cabinet", "Manutenzione", "Frontale e posteriore"),
+    ("Cabinet", "Manutenzione", "Frontale e posteriore · sostituzione a caldo"),
+    ("Cabinet", "Montaggio frontale", "Staffa dedicata, a richiesta (costo extra)"),
     ("Schermo", "Luminosità (nit)", ["5500–6400", "5500 (1/16) – 7000 (1/8)", "5000 (1/13) – 6500 (1/7)", "6000–10.000", "6500–10.000", "6500–10.000"]),
     ("Schermo", "Temperatura colore (K)", "3200–9300"),
     ("Schermo", "Angolo di visione (O/V)", "160° / 120°"),
@@ -87,7 +88,7 @@ P_ROWS = [
     ("Modulo", "Risoluzione modulo", ["201 × 112", "169 × 95", "160 × 90", "128 × 72", "107 × 61"]),
     ("Pannello", "Dimensioni pannello (mm)", "640 × 720 × 35 &nbsp;·&nbsp; 320 × 360 × 35"),
     ("Pannello", "Risoluzione (640 × 720)", ["402 × 448", "338 × 380", "320 × 360", "256 × 288", "214 × 244"]),
-    ("Pannello", "Peso", "15 kg/m²"),
+    ("Pannello", "Peso", "15 kg/m² · 18 kg/m² in vetrina, con travi di sospensione"),
     ("Pannello", "Materiale", "Magnesio pressofuso"),
     ("Pannello", "Manutenzione", "Frontale e posteriore"),
     ("Schermo", "Luminosità (nit)", "600–800 &nbsp;/&nbsp; 1300–1600 &nbsp;/&nbsp; 3500–4000"),
@@ -96,6 +97,10 @@ P_ROWS = [
     ("Schermo", "Angolo di visione (O/V)", "170° / 170°"),
     ("Schermo", "Consumo max / medio (W/m²)", "450 / 150"),
     ("Schermo", "Utilizzo", "Solo interno"),
+    ("Schermo", "Installazione", "A parete, su struttura in acciaio o appeso in vetrina"),
+    ("Totem pieghevole", "Misure (mm)", "640 × 2160 &nbsp;·&nbsp; 640 × 1440"),
+    ("Totem pieghevole", "Trasporto", "Si piega senza smontare · in flight case"),
+    ("Totem pieghevole", "Più totem insieme", "Affiancabili in un unico schermo · risoluzione max 1920 × 1200"),
 ]
 
 # ---------------- TOTEM (TOTEM Pro, esterno fine pitch) ----------------
@@ -104,11 +109,11 @@ T_ROWS = [
     ("Modulo", "Passo pixel (mm)", ["0,9306 × 0,9297", "1,2407 × 1,2396", "1,4888 × 1,4875", "1,5581 × 1,5658", "1,8611 × 1,8594"]),
     ("Modulo", "LED", "COB / MIP"),
     ("Modulo", "Densità (pixel/m²)", ["1.154.822", "649.587", "451.550", "409.891", "288.973"]),
-    ("Modulo", "Moduli", "6 × 6 &nbsp;/&nbsp; 7 × 7 &nbsp;/&nbsp; 8 × 8"),
+    ("Modulo", "Moduli", "6 × 6 (65″) &nbsp;/&nbsp; 7 × 7 (75″) &nbsp;/&nbsp; 8 × 8 (86″)"),
     ("Modulo", "Risoluzione modulo", ["144 × 256", "108 × 192", "90 × 160", "86 × 152", "72 × 128"]),
     ("Risoluzione", "Schermo 65″", ["864 × 1536", "648 × 1152", "540 × 960", "516 × 912", "432 × 768"]),
     ("Risoluzione", "Schermo 75″", ["1008 × 1792", "756 × 1344", "630 × 1120", "602 × 1064", "504 × 896"]),
-    ("Risoluzione", "Schermo 86″", ["1152 × 2048", "864 × 1536", "1152 × 1280", "688 × 1216", "576 × 1024"]),
+    ("Risoluzione", "Schermo 86″", ["1152 × 2048", "864 × 1536", "720 × 1280", "688 × 1216", "576 × 1024"]),
     ("Misure", "65″ (mm)", "Monofacciale 1004 × 2238 × 190 &nbsp;·&nbsp; Bifacciale 1004 × 2238 × 278"),
     ("Misure", "75″ (mm)", "Monofacciale 1138 × 2476 × 190 &nbsp;·&nbsp; Bifacciale 1138 × 2416 × 278"),
     ("Misure", "86″ (mm)", "Monofacciale 1276 × 2714 × 190 &nbsp;·&nbsp; Bifacciale 1276 × 2654 × 278"),
@@ -120,6 +125,11 @@ T_ROWS = [
     ("Schermo", "Protezione (fronte / retro)", "IP65 / IP65"),
     ("Schermo", "Angolo di visione", "170° / 170°"),
     ("Schermo", "Consumo max / medio (W/m²)", "750 / 250"),
+    ("Schermo", "Protezione frontale", "Vetro temperato"),
+    ("Schermo", "Durata LED", "100.000 h"),
+    ("Gestione", "Media player", "Integrato · 4G / 5G, Wi-Fi, rete, USB, HDMI"),
+    ("Gestione", "Controllo", "App da smartphone tramite hotspot Wi-Fi · più totem da remoto"),
+    ("Gestione", "Manutenzione", "Modulare: moduli, alimentatori e schede ricevitrici sostituibili singolarmente"),
 ]
 
 # ---------------- FRONT DESK ----------------
