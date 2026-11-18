@@ -1,0 +1,3 @@
+{"sfondo": "sito.mp4", "logo": "logo.png", "passo": 3.5, "durata": 25.5,
+ "prodotti": [{"img": "grand.png", "altezza": 1.25}, {"img": "pad.png", "altezza": 1.55}, {"img": "totem.png", "altezza": 1.85},
+              {"img": "stage.png", "altezza": 1.0}, {"img": "flex.png", "altezza": 0.95}]}

@@ -1,0 +1,16 @@
+{
+ "oro": "#C9A55C",
+ "durata": 25,
+ "colpi": [3.2, 20.2],
+ "apertura": {"frase": "Tutti dicono\ndi essere i migliori.", "fine": 3.2},
+ "rivela": {"video": "ham3d.mp4", "inizio": 3.2, "fine": 7.9, "piccolo": "Prosciutto di Parma", "grande": "Noi no.", "testoDa": 4.0},
+ "scena": {"video": "chef3d.mp4", "inizio": 7.6, "fine": 12.45, "piccolo": "Un solo modo di lavorare", "grande": "Il nostro.", "testoDa": 8.0},
+ "montaggio": {"inizio": 12.4, "fine": 15.6, "frase": "Dal nostro allevamento alla tua tavola",
+   "foto": [{"img": "p_parma.jpg", "nome": "Prosciutto di Parma"}, {"img": "p_coppa.jpg", "nome": "Coppa stagionata"},
+            {"img": "p_pancetta.jpg", "nome": "Pancetta stagionata"}, {"img": "p_cotto.jpg", "nome": "Prosciutto cotto"},
+            {"img": "p_culatta.jpg", "nome": "Culatta"}, {"img": "p_mortadella.jpg", "nome": "Mortadella"},
+            {"img": "p_guanciale.jpg", "nome": "Guanciale"}]},
+ "finale": {"inizio": 16.4, "logo": "logo.png", "riga1": "Salumi", "riga2": "Seicolli",
+   "slogan1": "Non siamo migliori,", "slogan1Da": 18.5, "slogan2": "ma siamo diversi.", "slogan2Da": 20.2,
+   "sito": "salumiseicolli.it", "sitoDa": 21.8}
+}

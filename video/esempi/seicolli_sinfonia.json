@@ -1,0 +1,10 @@
+{
+ "oro": "#C9A55C", "sfondo": "sito.mp4", "logo": "logo.png", "battuta": 0.675, "durata": 28,
+ "intro": {"fine": 4.0, "riga1": "Salumi", "riga2": "Seicolli"},
+ "prosciutto": {"img": "prosciutto.png", "grissini": "grissini.png", "inizio": 3.8, "fine": 11.6,
+   "piccolo": "Prosciutto di Parma", "grande": "Stagionato con pazienza"},
+ "fette": {"img": "coppa_fette.png", "inizio": 11.0, "fine": 17.0, "piccolo": "Coppa stagionata", "grande": "Ogni fetta, una nota"},
+ "chef": {"img": "chef_affetta.png", "inizio": 16.4, "fine": 21.6, "piccolo": "L'arte del taglio", "grande": "A mano, fetta dopo fetta"},
+ "finale": {"inizio": 21.0, "riga1": "Salumi", "riga2": "Seicolli", "motto": "La tradizione che si rinnova a ogni taglio",
+   "slogan": "Non siamo migliori, ma siamo diversi.", "sloganDa": 23.9, "sito": "salumiseicolli.it"}
+}
