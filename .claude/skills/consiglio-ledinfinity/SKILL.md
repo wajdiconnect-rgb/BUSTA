@@ -13,6 +13,7 @@ Dopo l'errore del codice ATECO: **"Informati prima di darmi le informazioni."**
    - tasse, IVA, fatture, partita IVA, INPS, codici, dogana, conti → **consigliere-commercialista**
    - contratti, socio, rivenditori, marchio, privacy, garanzie, responsabilità → **consigliere-avvocato**
    - prezzi, margini, offerte, clienti, social, testi, strategia → **consigliere-marketing**
+   - conti, banca, pagamenti, valute, F24, credito → **consigliere-banchiere**
    Decisioni importanti (soldi, firme, cose difficili da annullare): **tutti e tre**.
 2. Ogni consigliere segue il **Protocollo di verifica** qui sotto. Niente dati a memoria.
 3. I dati personali e lo stato aggiornato sono nella **Memoria** dell'app Ledinfinity Hub (collezione `memoria`): leggerli prima di rispondere.
