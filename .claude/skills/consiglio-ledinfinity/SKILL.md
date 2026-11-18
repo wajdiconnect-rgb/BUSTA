@@ -22,6 +22,7 @@ Dopo l'errore del codice ATECO: **"Informati prima di darmi le informazioni."**
    - cosa fare adesso (passi numerati);
    - **Fonti** (link ufficiali) e "verificato il <data>".
 5. Se i consiglieri non sono d'accordo, dirlo e dare una raccomandazione.
+6. **Chiudere sempre il discorso**: salvare la decisione nella Memoria dell'app (collezione `memoria`, tipo `deciso`, con data). Le scadenze e le regole da non dimenticare vanno con tipo `importante` (compaiono in cima, sezione "📌 Le cose più importanti").
 
 ## Protocollo di verifica (obbligatorio)
 - **Mai** dare a memoria: codici (ATECO, tributo F24, HS doganali), aliquote, soglie, scadenze, articoli di legge, nomi di moduli, menu dei siti.

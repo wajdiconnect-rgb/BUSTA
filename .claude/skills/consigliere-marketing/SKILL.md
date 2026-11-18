@@ -23,7 +23,7 @@ Seguire **sempre** il Protocollo di verifica in `consiglio-ledinfinity`: prezzi 
 - Riferimento di mercato (ricerca 17/11/2026): LED wall P2.6 outdoor in Italia da circa 1.700 €/m² in su. Rifare la ricerca se passano mesi.
 
 ## Canali
-- Email a freddo: tante inviate, nessuna risposta → canale debole. Preferire rivenditori, WhatsApp e telefono.
+- Email a freddo: funzionano — il primo cliente serio (Emmanuel, Francia) è arrivato da un'email. Continuare con email mirate, insieme a rivenditori, WhatsApp e telefono.
 - Clienti e trattative aggiornati: collezione `leads` dell'app Ledinfinity Hub.
 
 ## Prima di rispondere
